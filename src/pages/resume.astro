@@ -1,11 +1,164 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+const roles = [
+  {
+    org: "Sony India Software Center",
+    location: "Bangalore",
+    title: "Technical Specialist",
+    dates: "Jun 2023 → Present",
+    bullets: [
+      "Led improvements for camera image-segmentation models, driving experiments, evaluation, and quality gains.",
+      "Produced structured progress reports to support stakeholder decision-making and ML workstream planning.",
+      "Acted as feature owner for a camera software workstream, balancing model quality, timelines, and engineering constraints.",
+      "Scoped requirements, risks, and success metrics with Japan-side stakeholders before execution.",
+      "Coordinated requirements with Japan-side stakeholders and aligned execution with India-based engineering teams.",
+      "Strengthened cross-team communication and delivery cadence in a bilingual environment (English/Japanese).",
+    ],
+  },
+  {
+    org: "Honda Research Institute",
+    location: "Tokyo",
+    title: "AI Technical Lead",
+    dates: "Jan 2022 → May 2023",
+    bullets: [
+      "Designed analysis and debugging tools using ROS and Python to support robotics researchers.",
+      "Defined product direction and prioritization for internal research tools used by robotics teams.",
+      "Converted research goals into user stories and phased delivery plans.",
+      "Contributed to a social-robot application stack: React frontend, SQLite database, and Python backend integration.",
+      "Developed and supported a Dialogflow-based extended chatbot application and NLP model for a storytelling game.",
+      "Balanced research exploration with practical delivery constraints.",
+      "Defined user stories and coordinated multi-stakeholder collaboration across researchers and external partners.",
+    ],
+  },
+  {
+    org: "Pasona Tech, Inc.",
+    location: "Osaka",
+    title: "AI Engineer / Project Lead",
+    dates: "Feb 2020 → Dec 2021",
+    bullets: [
+      "Built computer vision models for enterprise use cases, including detection, segmentation, and keypoint estimation.",
+      "Created synthetic datasets using Blender, Unreal Engine, Unity, and OpenCV to expand training coverage.",
+      "Implemented Python inference and tuning workflows, including hyperparameter iteration and evaluation reporting.",
+      "Evaluated feasibility, effort, and impact of multiple AI approaches to guide client-facing PoC direction.",
+      "Supported client-facing PoCs by translating requirements into working prototypes and technical documentation.",
+    ],
+  },
+  {
+    org: "Hino Motors",
+    location: "Tokyo",
+    title: "Research Consultant — Autonomous R&D",
+    dates: "Sep 2017 → Jan 2020",
+    bullets: [
+      "Implemented path-planning code and ran perception experiments using LiDAR and camera sensor setups.",
+      "Applied ML to object detection and behavior logic, including PilotNet-based control and YOLO detection.",
+      "Built ROS-based remote control and obstacle avoidance prototypes on an autonomous vehicle platform.",
+      "Supported roadmap planning for autonomous-driving experiments by aligning research outputs with development needs.",
+      "Served as a bilingual bridge between Japanese stakeholders and English-speaking partners for technical discussions.",
+    ],
+  },
+];
 ---
 <BaseLayout title="Resume">
   <main class="mx-auto max-w-3xl px-4 py-12">
     <h1 class="text-3xl font-semibold">Resume</h1>
+
+    <section class="mt-6 mb-10 rounded-xl border border-neutral-800 bg-neutral-900/60 p-5">
+      <p class="text-sm leading-6 text-neutral-300">
+        <span class="font-medium text-neutral-100">Resume access</span><br />
+        For the latest resume in English or Japanese, please message me.
+        I'll share a tailored version depending on the role and context.
+      </p>
+    </section>
+
     <p class="mt-4 text-base leading-7 text-neutral-700 dark:text-neutral-300">
-      Resume to be added soon.
+      Technology professional with 8 years of experience in ML/computer vision, robotics, simulation,
+      and application development across Japan and India. Strong in requirements definition, cross-team
+      delivery, and technical documentation in bilingual environments.
     </p>
+
+    <h2 class="mt-10 text-xl font-semibold">Core Skills</h2>
+
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+      <div class="rounded-2xl border border-neutral-200 p-5 dark:border-neutral-800">
+        <div class="text-sm font-semibold text-neutral-900 dark:text-white">ML / Computer Vision</div>
+        <ul class="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-neutral-700 dark:text-neutral-300">
+          <li>Python, TensorFlow / Keras, PyTorch</li>
+          <li>Object detection, segmentation, keypoint models</li>
+          <li>OpenCV, synthetic data generation</li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-neutral-200 p-5 dark:border-neutral-800">
+        <div class="text-sm font-semibold text-neutral-900 dark:text-white">Robotics / Simulation</div>
+        <ul class="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-neutral-700 dark:text-neutral-300">
+          <li>ROS (services, actions), Gazebo</li>
+          <li>Unity (C#), Unreal Engine, Blender</li>
+          <li>Sensor data handling, autonomy prototyping</li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-neutral-200 p-5 dark:border-neutral-800">
+        <div class="text-sm font-semibold text-neutral-900 dark:text-white">Application Development</div>
+        <ul class="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-neutral-700 dark:text-neutral-300">
+          <li>FastAPI / Flask / Django (Python)</li>
+          <li>React, SQLite, SQL</li>
+          <li>GitHub, technical documentation</li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-neutral-200 p-5 dark:border-neutral-800">
+        <div class="text-sm font-semibold text-neutral-900 dark:text-white">Collaboration</div>
+        <ul class="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-neutral-700 dark:text-neutral-300">
+          <li>Requirements definition with stakeholders</li>
+          <li>Cross-cultural delivery (Japan and India)</li>
+          <li>Mentoring, code reviews, progress reporting</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="mt-10 text-xl font-semibold">Professional Experience</h2>
+
+    <ol class="mt-4 border-l border-neutral-200 pl-6 dark:border-neutral-800">
+      {roles.map((r) => (
+        <li class="relative pb-10">
+          <div class="text-sm text-neutral-500 dark:text-neutral-400">{r.dates}</div>
+          <div class="mt-1 text-base font-semibold text-neutral-900 dark:text-white">
+            {r.title}
+          </div>
+          <div class="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+            {r.org} · {r.location}
+          </div>
+
+          <ul class="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-neutral-700 dark:text-neutral-300">
+            {r.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ol>
+
+    <h2 class="mt-2 text-xl font-semibold">Education</h2>
+    <div class="mt-4 rounded-2xl border border-neutral-200 p-5 dark:border-neutral-800">
+      <div class="text-base font-semibold text-neutral-900 dark:text-white">
+        Indian Institute of Technology, Bombay
+      </div>
+      <div class="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+        B.Tech. Electrical and Electronics Engineering · Aug 2013 → Jul 2017
+      </div>
+
+      <ul class="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-neutral-700 dark:text-neutral-300">
+        <li>Designed and simulated a 6-stage pipelined processor in Verilog, and implemented a multi-cycle RISC processor on Cyclone IV E FPGA.</li>
+        <li>Built a digital oscilloscope prototype using an external ADC and a 128×64 graphical LCD (GLCD), including SPI interfacing.</li>
+      </ul>
+    </div>
+
+    <h2 class="mt-10 text-xl font-semibold">Certificates</h2>
+    <ul class="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-neutral-700 dark:text-neutral-300">
+      <li>AWS Certified Cloud Practitioner</li>
+      <li>Deep Learning Specialization (DeepLearning.AI)</li>
+      <li>IBM DevOps and Software Engineering Specialization</li>
+      <li>Python for Data Science, AI &amp; Development (IBM)</li>
+      <li>Continuous Integration and Continuous Delivery (CI/CD) (IBM)</li>
+    </ul>
+
   </main>
 </BaseLayout>
