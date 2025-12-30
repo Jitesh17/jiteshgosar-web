@@ -1,0 +1,52 @@
+---
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/blog/", label: "Blog" },
+  { href: "/demos/", label: "Demos" },
+  { href: "/about/", label: "About" },
+  { href: "/resume/", label: "Resume" },
+];
+---
+<header class="sticky top-0 z-50 border-b border-neutral-200 bg-white/85 backdrop-blur dark:border-neutral-800 dark:bg-neutral-950/70">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+    <a href="/" class="flex items-center gap-3">
+      <img src="/images/logo.png" alt="Jitesh Gosar" class="h-9 w-auto" />
+      <span class="sr-only">Jitesh Gosar</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-7 text-sm font-medium text-neutral-700 dark:text-neutral-200 md:flex">
+      {links.map((l) => (
+        <a class="hover:text-neutral-900 dark:hover:text-white" href={l.href}>
+          {l.label}
+        </a>
+      ))}
+      <a class="rounded-xl border border-neutral-200 px-4 py-2 text-sm font-semibold hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
+         href="/contact/">
+        Contact
+      </a>
+    </nav>
+
+    <!-- Mobile menu -->
+    <details class="relative md:hidden">
+      <summary class="list-none rounded-xl border border-neutral-200 px-3 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 dark:border-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-900">
+        Menu
+      </summary>
+
+      <div class="absolute right-0 mt-3 w-56 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-lg dark:border-neutral-800 dark:bg-neutral-950">
+        <nav class="flex flex-col p-2 text-sm">
+          {links.map((l) => (
+            <a class="rounded-xl px-3 py-2 text-neutral-700 hover:bg-neutral-50 dark:text-neutral-200 dark:hover:bg-neutral-900"
+               href={l.href}>
+              {l.label}
+            </a>
+          ))}
+          <a class="mt-1 rounded-xl bg-neutral-900 px-3 py-2 font-semibold text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+             href="/contact/">
+            Contact
+          </a>
+        </nav>
+      </div>
+    </details>
+  </div>
+</header>

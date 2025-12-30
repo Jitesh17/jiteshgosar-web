@@ -1,0 +1,23 @@
+<div class="fixed left-0 top-0 z-[9999] h-[6px] w-full bg-neutral-200/80 dark:bg-neutral-800/80">
+  <div id="scrollbar" class="h-full origin-left scale-x-0 bg-red-500"></div>
+</div>
+
+<script is:inline>
+  const bar = document.getElementById("scrollbar");
+  if (!bar) {
+    console.error("[ScrollProgress] bar element not found");
+  } else {
+    console.log("[ScrollProgress] script running");
+  }
+
+  const onScroll = () => {
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop || document.body.scrollTop;
+    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    const progress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+    bar.style.transform = `scaleX(${progress})`;
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+</script>
