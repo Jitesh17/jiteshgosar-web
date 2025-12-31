@@ -45,3 +45,14 @@ body {
 h1, h2, h3 {
   letter-spacing: -0.02em;
 }
+/* Add this to global.css for structure only */
+df-messenger {
+  z-index: 999;
+}
+
+df-messenger::part(chat-wrapper) {
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  /* Optional: Add a border that matches the site cards */
+  border: 1px solid rgba(128,128,128, 0.1); 
+}

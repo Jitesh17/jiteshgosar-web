@@ -3,6 +3,7 @@ import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import ScrollProgress from "../components/ScrollProgress.astro";
+import DialogflowChat from "../components/DialogflowChat.astro";
 
 const {
   title = "Jitesh Gosar",
@@ -28,5 +29,6 @@ const fullTitle = title === "Jitesh Gosar" ? title : `${title} | Jitesh Gosar`;
     <Nav />
     <slot />
     <Footer />
+    <DialogflowChat />
   </body>
 </html>

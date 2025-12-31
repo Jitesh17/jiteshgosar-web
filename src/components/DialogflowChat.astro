@@ -1,0 +1,41 @@
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<df-messenger
+  intent="WELCOME"
+  chat-title="Jitesh Gosar"
+  agent-id="5f61e638-87d6-4c62-8e8f-53d54b94623c"
+  language-code="en"
+  chat-icon="/public/images/Jitesh-photo-mini.png"
+  storage-option="localStorage"
+></df-messenger>
+
+<style is:global>
+  df-messenger {
+    z-index: 999;
+    
+    /* --- Main Window Colors (Dark Grey/Black) --- */
+    --df-messenger-button-titlebar-color: #171717; 
+    --df-messenger-button-titlebar-font-color: #ffffff;
+    --df-messenger-chat-background-color: #0a0a0a; 
+    --df-messenger-font-color: #e5e5e5;
+    
+    /* --- Message Bubbles --- */
+    --df-messenger-bot-message: #171717; 
+    --df-messenger-user-message: #262626; 
+    
+    /* --- Input Bar Fix (Prevents the white bar) --- */
+    --df-messenger-input-box-color: #171717; 
+    --df-messenger-input-font-color: #ffffff; 
+    --df-messenger-input-placeholder-font-color: #737373;
+    
+    /* --- Icons --- */
+    --df-messenger-send-icon: #ffffff;
+    --df-messenger-minimized-chat-close-icon-color: #ffffff;
+  }
+
+  /* Add a border so it stands out against dark backgrounds */
+  df-messenger::part(chat-wrapper) {
+    border: 1px solid #333;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  }
+</style>
