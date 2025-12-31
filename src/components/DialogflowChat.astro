@@ -8,34 +8,38 @@
   storage-option="localStorage"
 ></df-messenger>
 
-<style is:global>
+</style> --><style is:global>
   df-messenger {
     z-index: 999;
+
+    /* --- THE INPUT AREA (White per request) --- */
+    /* This creates a sharp contrast against the dark chat window */
+    --df-messenger-input-box-color: #ffffff;
+    --df-messenger-input-font-color: #101010;       /* Pitch black text for readability */
+    --df-messenger-input-placeholder-font-color: #666666;
+
+    /* --- HEADER & WINDOW (Deep Black) --- */
+    --df-messenger-button-titlebar-color: #ffffff;
+    --df-messenger-button-titlebar-font-color: #696969;
+    --df-messenger-chat-background-color: #111111;  /* Matte Black */
     
-    /* --- Main Window Colors (Dark Grey/Black) --- */
-    --df-messenger-button-titlebar-color: #171717; 
-    --df-messenger-button-titlebar-font-color: #ffffff;
-    --df-messenger-chat-background-color: #0a0a0a; 
-    --df-messenger-font-color: #e5e5e5;
+    /* --- MESSAGES & TEXT --- */
+    --df-messenger-font-color: #ffffff;             /* White text for the dark background */
     
-    /* --- Message Bubbles --- */
-    --df-messenger-bot-message: #171717; 
-    --df-messenger-user-message: #262626; 
-    
-    /* --- Input Bar Fix (Prevents the white bar) --- */
-    --df-messenger-input-box-color: #171717; 
-    --df-messenger-input-font-color: #ffffff; 
-    --df-messenger-input-placeholder-font-color: #737373;
-    
-    /* --- Icons --- */
-    --df-messenger-send-icon: #ffffff;
+    /* Bot: Dark Grey to blend in */
+    --df-messenger-bot-message: #222222;            
+    /* User: Lighter Grey to stand out */
+    --df-messenger-user-message: #404040;           
+
+    /* --- ICONS --- */
+    --df-messenger-send-icon: #101010;              /* Black icon to match white input box */
     --df-messenger-minimized-chat-close-icon-color: #ffffff;
   }
 
-  /* Add a border so it stands out against dark backgrounds */
+  /* Structural Polish */
   df-messenger::part(chat-wrapper) {
-    border: 1px solid #333;
+    border: 1px solid #333; /* Keeps it defined on dark backgrounds */
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   }
 </style>
