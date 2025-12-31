@@ -5,24 +5,113 @@ import { getCollection } from "astro:content";
 const posts = (await getCollection("blog"))
   .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
----
-<BaseLayout title="Blog">
-  <main class="mx-auto max-w-3xl px-4 py-12">
-    <h1 class="text-3xl font-semibold">Blog</h1>
 
-    <ul class="mt-8 space-y-6">
-      {posts.map((post) => (
-        <li>
-          <a class="block rounded-xl border border-neutral-200 p-5 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
-             href={`/blog/${post.slug}/`}>
-            <div class="text-lg font-medium">{post.data.title}</div>
-            <div class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-              {post.data.pubDate.toISOString().slice(0, 10)}
+function fmtDate(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+function uniqueTags(items: typeof posts) {
+  const set = new Set<string>();
+  for (const p of items) {
+    for (const t of p.data.tags ?? []) set.add(String(t));
+  }
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
+}
+
+const tags = uniqueTags(posts);
+---
+
+<BaseLayout title="Journal" description="Thoughts on engineering, philosophy, and life.">
+  <div class="mx-auto max-w-6xl px-4 py-20 lg:grid lg:grid-cols-[1fr_260px] lg:gap-16">
+    
+    <main>
+      <header class="mb-16">
+        <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">Journal</h1>
+        <p class="mt-6 text-lg leading-8 text-neutral-400">
+          A collection of thoughts on engineering, philosophy, and the systems we live in.
+        </p>
+      </header>
+
+      <div class="space-y-8">
+        {posts.map((post) => (
+          <article class="group relative flex flex-col gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/30 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-700 hover:shadow-2xl hover:shadow-neutral-900/50">
+            
+            <div class="absolute inset-0 -z-10 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" 
+                 style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.05%22/%3E%3C/svg%3E');">
             </div>
-            <div class="mt-3 text-neutral-700 dark:text-neutral-300">{post.data.description}</div>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </main>
+
+            <a href={`/blog/${post.slug}/`} class="absolute inset-0 z-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-neutral-500"></a>
+
+            <div class="relative z-10 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+              <time class="flex items-center gap-1.5 font-mono text-neutral-500">
+                <div class="h-1.5 w-1.5 rounded-full bg-neutral-800 transition-colors group-hover:bg-neutral-500"></div>
+                {fmtDate(post.data.pubDate)}
+              </time>
+              
+              {(post.data.tags?.length ?? 0) > 0 && (
+                <div class="flex gap-2">
+                  {post.data.tags.map((t) => (
+                    <a 
+                      href={`/tags/${encodeURIComponent(t)}/`}
+                      class="relative rounded-md border border-neutral-800 bg-neutral-950/40 px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-neutral-500 transition-colors hover:border-neutral-600 hover:text-neutral-300 hover:bg-neutral-900"
+                    >
+                      {t}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div class="relative z-0 space-y-3">
+              <h2 class="text-2xl font-bold leading-tight tracking-tight text-neutral-100 transition-colors group-hover:text-white">
+                {post.data.title}
+              </h2>
+              <p class="line-clamp-2 text-base leading-relaxed text-neutral-400 transition-colors group-hover:text-neutral-300">
+                {post.data.description}
+              </p>
+            </div>
+
+            <div class="mt-2 flex items-center text-sm font-medium text-neutral-500 transition-colors duration-300 group-hover:text-white">
+              <span>Read article</span>
+              
+              <div class="ml-2 overflow-hidden">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor" 
+                  class="h-4 w-4 -translate-x-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                >
+                  <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+
+          </article>
+        ))}
+      </div>
+    </main>
+
+    <aside class="mt-20 lg:mt-0">
+      <div class="sticky top-24 space-y-10">
+        {tags.length > 0 && (
+          <div class="space-y-4">
+            <h3 class="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-widest text-neutral-500">
+              <span class="h-px w-4 bg-neutral-700"></span>
+              Topics
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              {tags.map((t) => (
+                <a 
+                  href={`/tags/${encodeURIComponent(t)}/`}
+                  class="rounded-full border border-neutral-800 px-3 py-1 text-xs text-neutral-400 transition-all hover:border-neutral-600 hover:text-neutral-200 hover:bg-neutral-800/50"
+                >
+                  {t}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </aside>
+  </div>
 </BaseLayout>
