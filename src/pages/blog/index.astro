@@ -22,29 +22,33 @@ const tags = uniqueTags(posts);
 ---
 
 <BaseLayout title="Journal" description="Thoughts on engineering, philosophy, and life.">
-  <div class="mx-auto max-w-6xl px-4 py-20 lg:grid lg:grid-cols-[1fr_260px] lg:gap-16">
+  <div class="relative mx-auto min-h-screen max-w-6xl px-4 py-20 lg:grid lg:grid-cols-[1fr_260px] lg:gap-16 bg-neutral-50 dark:bg-neutral-950 transition-colors duration-300">
     
+    <div class="hidden xl:block absolute left-0 top-24 text-[10px] font-mono tracking-[0.3em] [writing-mode:vertical-rl] font-bold text-neutral-900/10 dark:text-white/5 select-none pointer-events-none">
+      システムエンジニアリング
+    </div>
+
     <main>
       <header class="mb-16">
-        <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">Journal</h1>
-        <p class="mt-6 text-lg leading-8 text-neutral-400">
+        <h1 class="text-4xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-5xl">Journal</h1>
+        <p class="mt-6 text-lg leading-8 text-neutral-600 dark:text-neutral-400">
           A collection of thoughts on engineering, philosophy, and the systems we live in.
         </p>
       </header>
 
       <div class="space-y-8">
         {posts.map((post) => (
-          <article class="group relative flex flex-col gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/30 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-700 hover:shadow-2xl hover:shadow-neutral-900/50">
+          <article class="group relative flex flex-col gap-4 rounded-2xl border p-8 transition-all duration-300 hover:-translate-y-1 border-neutral-200 bg-white shadow-sm hover:border-neutral-300 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900/30 dark:shadow-none dark:hover:border-neutral-700 dark:hover:shadow-neutral-900/50">
             
-            <div class="absolute inset-0 -z-10 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" 
+            <div class="absolute inset-0 -z-10 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100 hidden dark:block" 
                  style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.05%22/%3E%3C/svg%3E');">
             </div>
 
-            <a href={`/blog/${post.slug}/`} class="absolute inset-0 z-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-neutral-500"></a>
+            <a href={`/blog/${post.slug}/`} class="absolute inset-0 z-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500"></a>
 
             <div class="relative z-10 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-              <time class="flex items-center gap-1.5 font-mono text-neutral-500">
-                <div class="h-1.5 w-1.5 rounded-full bg-neutral-800 transition-colors group-hover:bg-neutral-500"></div>
+              <time class="flex items-center gap-1.5 font-mono text-neutral-500 transition-colors group-hover:text-neutral-700 dark:group-hover:text-neutral-400">
+                <div class="h-1.5 w-1.5 rounded-full bg-neutral-200 dark:bg-neutral-800 transition-colors group-hover:bg-neutral-500"></div>
                 {fmtDate(post.data.pubDate)}
               </time>
               
@@ -53,7 +57,7 @@ const tags = uniqueTags(posts);
                   {post.data.tags.map((t) => (
                     <a 
                       href={`/tags/${encodeURIComponent(t)}/`}
-                      class="relative rounded-md border border-neutral-800 bg-neutral-950/40 px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-neutral-500 transition-colors hover:border-neutral-600 hover:text-neutral-300 hover:bg-neutral-900"
+                      class="relative rounded-md border px-2 py-1 font-mono text-[10px] uppercase tracking-wide transition-colors border-neutral-200 bg-neutral-100 text-neutral-500 hover:border-neutral-300 hover:text-neutral-700 dark:border-neutral-800 dark:bg-neutral-950/40 dark:text-neutral-500 dark:hover:border-neutral-600 dark:hover:text-neutral-300 dark:hover:bg-neutral-900"
                     >
                       {t}
                     </a>
@@ -63,15 +67,15 @@ const tags = uniqueTags(posts);
             </div>
 
             <div class="relative z-0 space-y-3">
-              <h2 class="text-2xl font-bold leading-tight tracking-tight text-neutral-100 transition-colors group-hover:text-white">
+              <h2 class="text-2xl font-bold leading-tight tracking-tight text-neutral-900 dark:text-neutral-100 transition-colors group-hover:text-neutral-600 dark:group-hover:text-white">
                 {post.data.title}
               </h2>
-              <p class="line-clamp-2 text-base leading-relaxed text-neutral-400 transition-colors group-hover:text-neutral-300">
+              <p class="line-clamp-2 text-base leading-relaxed text-neutral-600 dark:text-neutral-400 transition-colors group-hover:text-neutral-700 dark:group-hover:text-neutral-300">
                 {post.data.description}
               </p>
             </div>
 
-            <div class="mt-2 flex items-center text-sm font-medium text-neutral-500 transition-colors duration-300 group-hover:text-white">
+            <div class="mt-2 flex items-center text-sm font-medium transition-colors duration-300 text-neutral-400 group-hover:text-neutral-900 dark:text-neutral-500 dark:group-hover:text-white">
               <span>Read article</span>
               
               <div class="ml-2 overflow-hidden">
@@ -96,14 +100,14 @@ const tags = uniqueTags(posts);
         {tags.length > 0 && (
           <div class="space-y-4">
             <h3 class="flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-widest text-neutral-500">
-              <span class="h-px w-4 bg-neutral-700"></span>
+              <span class="h-px w-4 bg-neutral-200 dark:bg-neutral-800"></span>
               Topics
             </h3>
             <div class="flex flex-wrap gap-2">
               {tags.map((t) => (
                 <a 
                   href={`/tags/${encodeURIComponent(t)}/`}
-                  class="rounded-full border border-neutral-800 px-3 py-1 text-xs text-neutral-400 transition-all hover:border-neutral-600 hover:text-neutral-200 hover:bg-neutral-800/50"
+                  class="rounded-full border px-3 py-1 text-xs transition-all border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:text-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-200 dark:hover:bg-neutral-800/50"
                 >
                   {t}
                 </a>

@@ -1,41 +1,42 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
+
 <BaseLayout title="About">
-  <main class="mx-auto max-w-3xl px-4 py-12">
-    <h1 class="text-3xl font-semibold">About</h1>
+  <main class="mx-auto max-w-2xl px-4 py-12 lg:py-24">
+    
+    <header class="mb-12">
+      <h1 class="text-4xl font-bold tracking-tight text-neutral-900 dark:text-white">About</h1>
+      <p class="mt-4 font-mono text-sm text-neutral-500">
+        Engineer. Systems Thinker. Builder.
+      </p>
+    </header>
 
-    <p class="mt-6 text-base leading-7 text-neutral-700 dark:text-neutral-300">
-      I am a software engineer working at the intersection of AI, systems, and product thinking.
-      My work focuses on building practical, well-structured software that connects research,
-      engineering, and real-world use.
-    </p>
+    <div class="space-y-8 text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+      <p>
+        I am a software engineer working at the intersection of <strong class="text-neutral-900 dark:text-neutral-200">AI, systems, and product thinking</strong>. My work focuses on building practical, well-structured software that connects research, engineering, and real-world use.
+      </p>
 
-    <p class="mt-4 text-base leading-7 text-neutral-700 dark:text-neutral-300">
-      Over the years, I have worked on AI-driven systems, simulation and graphics workflows,
-      developer tools, and internal platforms. I am especially interested in how complex systems
-      can be made simpler, more reliable, and easier to reason about.
-    </p>
+      <p>
+        Over the years, I have worked on AI-driven systems, simulation workflows, and internal platforms. I am especially interested in how complex systems can be made simpler, more reliable, and easier to reason about.
+      </p>
 
-    <p class="mt-6 text-base leading-7 text-neutral-700 dark:text-neutral-300">
-      This website is a personal space where I:
-    </p>
+      <hr class="border-neutral-200 dark:border-neutral-800" />
 
-    <ul class="mt-3 list-disc pl-6 text-base leading-7 text-neutral-700 dark:text-neutral-300">
-      <li>write technical notes and long-form blog posts</li>
-      <li>document ideas and experiments</li>
-      <li>share interactive demos and small projects</li>
-      <li>collect learnings from work and side explorations</li>
-    </ul>
+      <h3 class="text-xl font-semibold text-neutral-900 dark:text-neutral-200">This Digital Garden</h3>
+      <p>
+        This website is a personal space where I:
+      </p>
+      <ul class="list-disc pl-6 marker:text-neutral-400 dark:marker:text-neutral-600">
+        <li>Write technical notes and long-form journal entries.</li>
+        <li>Document ideas, experiments, and "working notes".</li>
+        <li>Share interactive demos and small projects.</li>
+      </ul>
 
-    <p class="mt-6 text-base leading-7 text-neutral-700 dark:text-neutral-300">
-      Most of the content here grows out of things I am actively building, testing, or thinking
-      about. Some posts are polished, others are closer to working notes. The goal is clarity
-      rather than completeness.
-    </p>
+      <p>
+        Most of the content here grows out of things I am actively building. The goal is <span class="text-neutral-900 dark:text-neutral-200">clarity rather than completeness</span>.
+      </p>
+    </div>
 
-    <p class="mt-4 text-base leading-7 text-neutral-700 dark:text-neutral-300">
-      If something here is useful to you, feel free to explore further.
-    </p>
   </main>
 </BaseLayout>
