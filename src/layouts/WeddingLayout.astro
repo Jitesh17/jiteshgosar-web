@@ -1,0 +1,21 @@
+---
+import "../styles/global.css";
+
+const { title = "Wedding Invitation", description = "" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body class="bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 transition-colors duration-300">
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
