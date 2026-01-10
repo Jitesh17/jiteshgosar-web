@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import WeddingLayout from "../../layouts/WeddingLayout.astro";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -23,7 +23,7 @@ const pageTitle = `Wedding Invitation - ${slug}`;
 ---
 
 
-<BaseLayout title={pageTitle} description="Wedding invitation details.">
+<WeddingLayout title={pageTitle} description="Wedding invitation details.">
   <!-- If JS is disabled, we keep content hidden and show a note -->
   <noscript>
     <div class="mx-auto max-w-2xl px-4 py-10">
@@ -333,4 +333,4 @@ const pageTitle = `Wedding Invitation - ${slug}`;
 
     unlockFlow().catch(console.error);
   </script>
-</BaseLayout>
+</WeddingLayout>
