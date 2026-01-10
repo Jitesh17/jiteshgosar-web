@@ -218,6 +218,8 @@ const pageTitle = `Wedding Invitation - ${slug}`;
     const error = $("errorMsg");
     const missing = $("missingMsg");
     const lockHint = $("lockHint");
+    
+    input.addEventListener("input", () => error.classList.add("hidden"));
 
     function showContent() {
       lockScreen.classList.add("hidden");
@@ -428,10 +430,10 @@ const pageTitle = `Wedding Invitation - ${slug}`;
         }
       }
 
-      btn.addEventListener("click", attempt);
+      btn.addEventListener("click", attempt, { once: false });
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") attempt();
-      });
+      }, { once: false });
 
       showLock();
     }
