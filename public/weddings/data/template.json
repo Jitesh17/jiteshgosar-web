@@ -11,12 +11,22 @@
   "contacts": [],
 
   "theme": {
-  "background": "image",
-  "imageUrl": "/weddings/assets/bg-wedding-1.png"
+    "background": "image",
+    "imageUrl": "/weddings/assets/bg-wedding-1.png"
   },
 
   "theme": {
-  "background": "gradient",
-  "gradient": "from-rose-50 via-white to-amber-50"
+    "background": "gradient",
+    "gradient": "from-rose-50 via-white to-amber-50"
   }
 }
+
+// "media": {
+//   "couplePhoto": {
+//     "enabled": true,
+//     "src": "/weddings/photos/shubham-pallavi/couple.png",
+//     "alt": "Shubham Mehra and Pallavi Mane",
+//     "shape": "circle",
+//     "size": 128
+//   }
+// },
