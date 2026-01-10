@@ -6,69 +6,145 @@ const calendarUrl = "/weddings/friend-a/calendar.ics";
 ---
 
 <BaseLayout title="Wedding Invitation" description="Wedding invitation details.">
-  <div class="mx-auto max-w-3xl px-4 py-10">
+  <!-- Lock Screen -->
+  <div class="mx-auto max-w-md px-4 py-20" id="lockScreen">
     <div class="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/30">
+      <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">Private Invitation</h1>
+      <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+        Please enter the password to view details.
+      </p>
 
-      <div class="text-xs font-mono tracking-widest text-neutral-500 dark:text-neutral-400">
-        WEDDING INVITATION
-      </div>
+      <input
+        id="passwordInput"
+        type="password"
+        placeholder="Password"
+        class="mt-4 w-full rounded-xl border px-4 py-2 text-sm dark:border-neutral-800 dark:bg-neutral-950"
+      />
 
-      <h1 id="coupleNames" class="mt-3 text-4xl font-bold tracking-tight text-neutral-900 dark:text-white">
-        Loading…
-      </h1>
+      <button
+        id="unlockBtn"
+        class="mt-4 w-full rounded-xl border px-4 py-2 text-sm font-semibold dark:border-neutral-800"
+        type="button"
+      >
+        Unlock
+      </button>
 
-      <p id="tagline" class="mt-3 text-neutral-600 dark:text-neutral-400"></p>
+      <p id="errorMsg" class="mt-3 hidden text-sm text-red-600 dark:text-red-400">
+        Incorrect password.
+      </p>
+    </div>
+  </div>
 
-      <div class="mt-6 flex flex-wrap gap-3 text-sm">
-        <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
-          <span class="font-semibold">Date:</span>
-          <span id="weddingDate"></span>
+  <!-- Protected Content -->
+  <div id="protectedContent" class="hidden">
+    <div class="mx-auto max-w-3xl px-4 py-10">
+      <div class="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/30">
+
+        <div class="text-xs font-mono tracking-widest text-neutral-500 dark:text-neutral-400">
+          WEDDING INVITATION
         </div>
 
-        <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
-          <span class="font-semibold">Countdown:</span>
-          <span id="countdown"></span>
+        <h1 id="coupleNames" class="mt-3 text-4xl font-bold tracking-tight text-neutral-900 dark:text-white">
+          Loading…
+        </h1>
+
+        <p id="tagline" class="mt-3 text-neutral-600 dark:text-neutral-400"></p>
+
+        <div class="mt-6 flex flex-wrap gap-3 text-sm">
+          <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
+            <span class="font-semibold">Date:</span>
+            <span id="weddingDate"></span>
+          </div>
+
+          <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
+            <span class="font-semibold">Countdown:</span>
+            <span id="countdown"></span>
+          </div>
+
+          <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
+            <span class="font-semibold">Updated:</span>
+            <span id="lastUpdated"></span>
+          </div>
         </div>
 
-        <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
-          <span class="font-semibold">Updated:</span>
-          <span id="lastUpdated"></span>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a id="mapBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800" target="_blank" rel="noopener">
+            Open Google Maps
+          </a>
+
+          <a id="subscribeBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800">
+            Subscribe for calendar updates
+          </a>
+
+          <a href={calendarUrl} class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800" target="_blank" rel="noopener">
+            View calendar feed
+          </a>
         </div>
+
+        <div class="mt-8 border-t pt-6 dark:border-neutral-800">
+          <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Schedule</h2>
+          <div id="schedule" class="mt-4 grid gap-3"></div>
+        </div>
+
+        <div class="mt-8 border-t pt-6 dark:border-neutral-800">
+          <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Updates</h2>
+          <div id="updates" class="mt-4 grid gap-3"></div>
+        </div>
+
+        <div class="mt-8 border-t pt-6 dark:border-neutral-800">
+          <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Contacts</h2>
+          <div id="contacts" class="mt-4 grid gap-2 text-sm text-neutral-600 dark:text-neutral-400"></div>
+        </div>
+
       </div>
-
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a id="mapBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800" target="_blank" rel="noopener">
-          Open Google Maps
-        </a>
-
-        <a id="subscribeBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800">
-          Subscribe for calendar updates
-        </a>
-
-        <a href={calendarUrl} class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800" target="_blank" rel="noopener">
-          View calendar feed
-        </a>
-      </div>
-
-      <div class="mt-8 border-t pt-6 dark:border-neutral-800">
-        <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Schedule</h2>
-        <div id="schedule" class="mt-4 grid gap-3"></div>
-      </div>
-
-      <div class="mt-8 border-t pt-6 dark:border-neutral-800">
-        <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Updates</h2>
-        <div id="updates" class="mt-4 grid gap-3"></div>
-      </div>
-
-      <div class="mt-8 border-t pt-6 dark:border-neutral-800">
-        <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Contacts</h2>
-        <div id="contacts" class="mt-4 grid gap-2 text-sm text-neutral-600 dark:text-neutral-400"></div>
-      </div>
-
     </div>
   </div>
 
   <script define:vars={{ detailsUrl, calendarUrl }}>
+    // ---------- Password Gate ----------
+    const PASSWORD = "123";
+    const KEY = "weddings-friend-a-unlocked";
+
+    const lockScreen = document.getElementById("lockScreen");
+    const content = document.getElementById("protectedContent");
+    const input = document.getElementById("passwordInput");
+    const btn = document.getElementById("unlockBtn");
+    const error = document.getElementById("errorMsg");
+
+    function showContent() {
+      lockScreen.classList.add("hidden");
+      content.classList.remove("hidden");
+    }
+
+    function showLock() {
+      lockScreen.classList.remove("hidden");
+      content.classList.add("hidden");
+    }
+
+    function unlock() {
+      if ((input?.value || "") === PASSWORD) {
+        localStorage.setItem(KEY, "true");
+        showContent();
+        main().catch(console.error);
+      } else {
+        error.classList.remove("hidden");
+      }
+    }
+
+    btn.addEventListener("click", unlock);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") unlock();
+    });
+
+    // If already unlocked, show content and load immediately
+    if (localStorage.getItem(KEY) === "true") {
+      showContent();
+      main().catch(console.error);
+    } else {
+      showLock();
+    }
+
+    // ---------- Existing Render Logic ----------
     function pad2(n) { return String(n).padStart(2, "0"); }
 
     function formatLocal(iso) {
@@ -152,8 +228,8 @@ const calendarUrl = "/weddings/friend-a/calendar.ics";
           </div>
           ${ev.notes ? `<div class="mt-2 text-sm text-neutral-500">${ev.notes}</div>` : ""}
           <div class="mt-3 flex gap-2 text-sm">
-            <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" href="${ev.mapUrl}" target="_blank">Maps</a>
-            <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" href="${buildGoogleCalendarLink(ev)}" target="_blank">
+            <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" href="${ev.mapUrl}" target="_blank" rel="noopener">Maps</a>
+            <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" href="${buildGoogleCalendarLink(ev)}" target="_blank" rel="noopener">
               Add to Google Calendar
             </a>
           </div>
@@ -181,7 +257,5 @@ const calendarUrl = "/weddings/friend-a/calendar.ics";
         contacts.appendChild(el);
       }
     }
-
-    main().catch(console.error);
   </script>
 </BaseLayout>
