@@ -119,5 +119,11 @@
   "title": "RSVP",
   "buttonText": "RSVP (open form here)",
   "openInNewTabText": "Open in Google Forms"
+  },
+
+  "theme": {
+  "background": "gradient",
+  "gradient": "from-rose-50 via-white to-amber-50"
   }
+
 }
