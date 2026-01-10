@@ -1,0 +1,111 @@
+{
+  "password": "123",
+  "passwordHint": "Please contact the family for the password.",
+
+  "coupleNames": "Shubham Mehra & Pallavi Mane",
+  "tagline": "Together with our families, we invite you to celebrate our wedding.",
+  "cityLine": "Gwalior, Madhya Pradesh",
+
+  "lastUpdated": "2026-01-10T12:00:00+05:30",
+
+  "primaryVenue": {
+    "name": "Taj Usha Kiran Palace",
+    "address": "Gwalior, Madhya Pradesh",
+    "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior"
+  },
+
+  "primaryEvent": {
+    "id": "ceremony",
+    "title": "Pani Grahan Sanskar (Saat Phere)",
+    "start": "2026-02-08T11:00:00+05:30",
+    "end": "2026-02-08T13:00:00+05:30"
+  },
+
+  "schedule": [
+    {
+      "id": "tilak-lagnaotsav",
+      "title": "Lagnaotsav (Tilak)",
+      "start": "2026-02-04T16:00:00+05:30",
+      "end": "2026-02-04T18:00:00+05:30",
+      "locationName": "Nij Nivas",
+      "address": "Bhopal, Madhya Pradesh",
+      "mapUrl": "https://maps.google.com/?q=Bhopal",
+      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+    },
+    {
+      "id": "matrika-mandapachchadan",
+      "title": "Matrika Pujan & Mandapachchadan",
+      "start": "2026-02-05T10:00:00+05:30",
+      "end": "2026-02-05T12:00:00+05:30",
+      "locationName": "Nij Nivas",
+      "address": "Bhopal, Madhya Pradesh",
+      "mapUrl": "https://maps.google.com/?q=Bhopal",
+      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+    },
+    {
+      "id": "sagai-haldi",
+      "title": "Sagai & Haldi",
+      "start": "2026-02-07T11:00:00+05:30",
+      "end": "2026-02-07T13:00:00+05:30",
+      "locationName": "Taj Usha Kiran Palace",
+      "address": "Gwalior, Madhya Pradesh",
+      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior",
+      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+    },
+    {
+      "id": "sangeet",
+      "title": "Sangeet",
+      "start": "2026-02-07T19:00:00+05:30",
+      "end": "2026-02-07T22:00:00+05:30",
+      "locationName": "Taj Usha Kiran Palace",
+      "address": "Gwalior, Madhya Pradesh",
+      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior",
+      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+    },
+    {
+      "id": "saat-phere-pani-grahan",
+      "title": "Pani Grahan Sanskar (Saat Phere)",
+      "start": "2026-02-08T11:00:00+05:30",
+      "end": "2026-02-08T13:00:00+05:30",
+      "locationName": "Taj Usha Kiran Palace",
+      "address": "Gwalior, Madhya Pradesh",
+      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior",
+      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+    },
+    {
+      "id": "aashirwad-samaroh",
+      "title": "Shubh Aashirwad Samaroh",
+      "start": "2026-02-08T20:00:00+05:30",
+      "end": "2026-02-08T23:00:00+05:30",
+      "locationName": "Taj Usha Kiran Palace",
+      "address": "Gwalior, Madhya Pradesh",
+      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior",
+      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+    }
+  ],
+
+  "updates": [
+    {
+      "when": "2026-01-10T12:00:00+05:30",
+      "text": "Wedding details added from the invitation card. Calendar end times are estimates and can be refined."
+    }
+  ],
+
+  "contacts": [
+    {
+      "name": "Shubham Mehra",
+      "role": "Groom",
+      "phone": "+91-XXXXXXXXXX"
+    },
+    {
+      "name": "Pallavi Mane",
+      "role": "Bride",
+      "phone": "+91-XXXXXXXXXX"
+    },
+    {
+      "name": "Family Contact",
+      "role": "Family",
+      "phone": "+91-XXXXXXXXXX"
+    }
+  ]
+}
