@@ -125,6 +125,36 @@ const pageTitle = `Wedding Invitation - ${slug}`;
           <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Contacts</h2>
           <div id="contacts" class="mt-4 grid gap-2 text-sm text-neutral-600 dark:text-neutral-400"></div>
         </div>
+
+        <div class="mt-8 border-t pt-6 dark:border-neutral-800" id="rsvpSection" style="display:none;">
+          <h2 class="text-lg font-semibold text-neutral-900 dark:text-white" id="rsvpTitle">RSVP</h2>
+
+          <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400" id="rsvpDeadlineText" style="display:none;"></p>
+
+          <div class="mt-4" id="rsvpButtonWrap" style="display:none;">
+            <a id="rsvpButton" class="inline-block rounded-xl border px-4 py-2 text-sm font-semibold dark:border-neutral-800">
+              RSVP Now
+            </a>
+
+            <div class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">
+              <a id="rsvpOpenInNewTab" target="_blank" rel="noopener" class="underline">Open in Google Forms</a>
+            </div>
+          </div>
+
+
+
+          <div class="mt-4" id="rsvpEmbedWrap" style="display:none;">
+            <iframe
+              id="rsvpIframe"
+              title="RSVP Form"
+              class="w-full rounded-2xl border dark:border-neutral-800"
+              style="height: 900px;"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -233,6 +263,80 @@ const pageTitle = `Wedding Invitation - ${slug}`;
       return DETAILS && String(pw) === String(DETAILS.password);
     }
 
+    function renderRsvp(rsvp) {
+      const section = document.getElementById("rsvpSection");
+      const title = document.getElementById("rsvpTitle");
+      const deadlineText = document.getElementById("rsvpDeadlineText");
+
+      const buttonWrap = document.getElementById("rsvpButtonWrap");
+      const button = document.getElementById("rsvpButton");
+      const openNewTab = document.getElementById("rsvpOpenInNewTab");
+
+      const embedWrap = document.getElementById("rsvpEmbedWrap");
+      const iframe = document.getElementById("rsvpIframe");
+
+      section.style.display = "none";
+      buttonWrap.style.display = "none";
+      embedWrap.style.display = "none";
+      deadlineText.style.display = "none";
+
+      if (!rsvp || rsvp.enabled !== true) return;
+
+      section.style.display = "block";
+      title.textContent = rsvp.title || "RSVP";
+
+      if (rsvp.deadline) {
+        deadlineText.textContent = `RSVP deadline: ${formatLocal(rsvp.deadline)}`;
+        deadlineText.style.display = "block";
+      }
+
+      const mode = (rsvp.mode || "button").toLowerCase();
+      const showButton = rsvp.showButton !== false; // default true
+
+      if (rsvp.formUrl) {
+        openNewTab.href = rsvp.formUrl;
+        openNewTab.textContent = rsvp.openInNewTabText || "Open in Google Forms";
+      }
+
+      // Button-only mode
+      if (mode === "button") {
+        if (!rsvp.formUrl) return;
+        button.textContent = rsvp.buttonText || "RSVP Now";
+        button.href = rsvp.formUrl;
+        button.target = "_blank";
+        button.rel = "noopener";
+        buttonWrap.style.display = "block";
+        embedWrap.style.display = "none";
+        return;
+      }
+
+      // Embed mode
+      if (!rsvp.embedUrl) return;
+
+      iframe.src = rsvp.embedUrl;
+
+      if (!showButton) {
+        // Show embed immediately
+        embedWrap.style.display = "block";
+        return;
+      }
+
+      // Show a button first, reveal embed on click
+      buttonWrap.style.display = "block";
+      button.textContent = rsvp.buttonText || "RSVP (open form here)";
+      button.href = "#rsvp-form";
+      button.target = "";
+      button.rel = "";
+
+      button.onclick = (e) => {
+        e.preventDefault();
+        embedWrap.style.display = "block";
+        // Scroll to embed smoothly
+        const anchor = document.getElementById("rsvpEmbedWrap");
+        if (anchor) anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+    }
+
     async function renderInvite() {
       $("coupleNames").textContent = DETAILS.coupleNames;
       $("tagline").textContent = DETAILS.tagline;
@@ -290,6 +394,7 @@ const pageTitle = `Wedding Invitation - ${slug}`;
         el.innerHTML = `<strong>${c.name}</strong> (${c.role}) · ${c.phone}`;
         contacts.appendChild(el);
       }
+      renderRsvp(DETAILS.rsvp);
     }
 
     async function unlockFlow() {

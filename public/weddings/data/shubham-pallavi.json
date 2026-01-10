@@ -107,5 +107,17 @@
       "role": "Family",
       "phone": "+91-XXXXXXXXXX"
     }
-  ]
+  ],
+
+  "rsvp": {
+  "enabled": true,
+  "mode": "embed",
+  "showButton": true,
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLSf3b65A7HFAZtwq4MClUORIBRHRaVG4k7JF4yTS2enjKrz7Yw/viewform?usp=dialog",
+  "embedUrl": "https://docs.google.com/forms/d/e/1FAIpQLSf3b65A7HFAZtwq4MClUORIBRHRaVG4k7JF4yTS2enjKrz7Yw/viewform?embedded=true",
+  "deadline": "2026-01-25T23:59:00+05:30",
+  "title": "RSVP",
+  "buttonText": "RSVP (open form here)",
+  "openInNewTabText": "Open in Google Forms"
+  }
 }
