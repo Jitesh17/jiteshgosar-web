@@ -190,8 +190,14 @@ const pageTitle = `Wedding Invitation - ${slug}`;
     }
 
     function buildGoogleCalendarLink(ev) {
-      const start = new Date(ev.start);
-      const end = new Date(ev.end);
+      const start = new Date(ev?.start);
+      const end = new Date(ev?.end);
+
+      // Guard bad/missing dates
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+        console.warn("Invalid start/end in event:", ev);
+        return "https://calendar.google.com/calendar/";
+      }
 
       const fmt = (d) => {
         const y = d.getUTCFullYear();
@@ -204,9 +210,17 @@ const pageTitle = `Wedding Invitation - ${slug}`;
       };
 
       const dates = `${fmt(start)}/${fmt(end)}`;
-      const text = encodeURIComponent(ev.title);
-      const details = encodeURIComponent(ev.notes || "");
-      const location = encodeURIComponent([ev.locationName, ev.address].filter(Boolean).join(", "));
+
+      const title = String(ev?.title || "Event");
+      const notes = String(ev?.notes || "");
+      const locationName = String(ev?.locationName || "");
+      const address = String(ev?.address || "");
+      const locationStr = [locationName, address].map(s => s.trim()).filter(Boolean).join(", ");
+
+      const text = encodeURIComponent(title);
+      const details = encodeURIComponent(notes);
+      const location = encodeURIComponent(locationStr);
+
       return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}&location=${location}`;
     }
 
@@ -274,17 +288,31 @@ const pageTitle = `Wedding Invitation - ${slug}`;
       // Reset
       wrapper.className = "";
       wrapper.style.backgroundImage = "";
+      wrapper.style.backgroundSize = "";
+      wrapper.style.backgroundPosition = "";
+      wrapper.style.backgroundRepeat = "";
 
       if (theme.background === "gradient" && theme.gradient) {
         wrapper.className = `min-h-screen bg-gradient-to-br ${theme.gradient}`;
       }
 
       if (theme.background === "image" && theme.imageUrl) {
-        wrapper.style.backgroundImage = `url('${theme.imageUrl}')`;
+        wrapper.classList.add("min-h-screen");
+        // wrapper.style.backgroundImage =
+          // `linear-gradient(rgba(255,255,255,0.86), rgba(255,255,255,0.86)), url('${theme.imageUrl}')`;
+        const isDark = document.documentElement.classList.contains("dark");
+
+        // In light mode, fade toward white.
+        // In dark mode, fade toward near-black.
+        const overlay = isDark
+          ? "linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.78))"
+          : "linear-gradient(rgba(255,255,255,0.86), rgba(255,255,255,0.86))";
+
+        wrapper.style.backgroundImage = `${overlay}, url('${theme.imageUrl}')`;
+
         wrapper.style.backgroundSize = "cover";
         wrapper.style.backgroundPosition = "center";
         wrapper.style.backgroundRepeat = "no-repeat";
-        wrapper.classList.add("min-h-screen");
       }
     }
 
@@ -315,7 +343,7 @@ const pageTitle = `Wedding Invitation - ${slug}`;
         deadlineText.style.display = "block";
       }
 
-      const mode = (rsvp.mode || "button").toLowerCase();
+      const mode = String(rsvp.mode || "button").toLowerCase();
       const showButton = rsvp.showButton !== false; // default true
 
       if (rsvp.formUrl) {
@@ -338,28 +366,32 @@ const pageTitle = `Wedding Invitation - ${slug}`;
       // Embed mode
       if (!rsvp.embedUrl) return;
 
-      iframe.src = rsvp.embedUrl;
+      let iframeLoaded = false;
 
       if (!showButton) {
-        // Show embed immediately
+        iframe.src = rsvp.embedUrl;
         embedWrap.style.display = "block";
         return;
       }
 
-      // Show a button first, reveal embed on click
       buttonWrap.style.display = "block";
       button.textContent = rsvp.buttonText || "RSVP (open form here)";
-      button.href = "#rsvp-form";
+      button.href = "#";
       button.target = "";
       button.rel = "";
 
       button.onclick = (e) => {
         e.preventDefault();
         embedWrap.style.display = "block";
-        // Scroll to embed smoothly
-        const anchor = document.getElementById("rsvpEmbedWrap");
-        if (anchor) anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        if (!iframeLoaded) {
+          iframe.src = rsvp.embedUrl;
+          iframeLoaded = true;
+        }
+
+        embedWrap.scrollIntoView({ behavior: "smooth", block: "start" });
       };
+
     }
 
     async function renderInvite() {
@@ -455,7 +487,7 @@ const pageTitle = `Wedding Invitation - ${slug}`;
         }
       }
 
-      btn.addEventListener("click", attempt, { once: false });
+      btn.addEventListener("click", attempt);
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") attempt();
       }, { once: false });

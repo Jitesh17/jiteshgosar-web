@@ -8,5 +8,15 @@
   "primaryEvent": { "title": "Wedding Ceremony", "start": "...", "end": "..." },
   "schedule": [],
   "updates": [],
-  "contacts": []
+  "contacts": [],
+
+  "theme": {
+  "background": "image",
+  "imageUrl": "/weddings/assets/bg-wedding-1.png"
+  },
+
+  "theme": {
+  "background": "gradient",
+  "gradient": "from-rose-50 via-white to-amber-50"
+  }
 }
