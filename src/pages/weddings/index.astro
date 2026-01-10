@@ -1,0 +1,19 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Weddings" description="Wedding invitation pages.">
+  <div class="mx-auto max-w-3xl px-4 py-10">
+    <h1 class="text-3xl font-bold text-neutral-900 dark:text-white">Wedding Invitations</h1>
+    <p class="mt-2 text-neutral-600 dark:text-neutral-400">Choose an invitation:</p>
+
+    <div class="mt-6 grid gap-4">
+      <a class="rounded-2xl border p-5 hover:shadow-sm dark:border-neutral-800" href="/weddings/friend-a/">
+        Friend A
+      </a>
+      <a class="rounded-2xl border p-5 hover:shadow-sm dark:border-neutral-800" href="/weddings/friend-b/">
+        Friend B
+      </a>
+    </div>
+  </div>
+</BaseLayout>
