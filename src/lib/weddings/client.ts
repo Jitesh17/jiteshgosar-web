@@ -181,66 +181,84 @@ function getDecor(details: Details): DecorConfig | undefined {
   return details.theme?.decor ?? details.decor;
 }
 
-function applyDecor(details: Details) {
-  const root = el<HTMLElement>("decorCorners");
-  const tl = el<HTMLElement>("decorTL");
-  const tr = el<HTMLElement>("decorTR");
-  const bl = el<HTMLElement>("decorBL");
-  const br = el<HTMLElement>("decorBR");
+function applyDecor(theme: any) {
+  const root = document.getElementById("decorCorners");
+  const tl = document.getElementById("decorTL");
+  const tr = document.getElementById("decorTR");
+  const bl = document.getElementById("decorBL");
+  const br = document.getElementById("decorBR");
   if (!root || !tl || !tr || !bl || !br) return;
 
-  // Reset
   root.classList.add("hidden");
-  for (const node of [tl, tr, bl, br]) {
-    node.style.backgroundImage = "";
-    node.style.backgroundRepeat = "no-repeat";
-    node.style.backgroundSize = "";
-    node.style.backgroundPosition = "";
-    node.style.width = "";
-    node.style.height = "";
-    node.style.opacity = "";
-    node.style.transform = "";
-  }
 
-  const d = getDecor(details);
-  if (!d?.enabled) return;
-  if ((d.mode || "corners") !== "corners") return;
-  if (!d.imageUrl && !d.corners) return;
+  const resetCorner = (el: HTMLElement) => {
+    el.style.backgroundImage = "";
+    el.style.backgroundRepeat = "no-repeat";
+    el.style.backgroundSize = "";
+    el.style.backgroundPosition = "";
+    el.style.width = "";
+    el.style.height = "";
+    el.style.opacity = "";
+    el.style.transform = "";
+  };
+
+  [tl, tr, bl, br].forEach(resetCorner);
+
+  const d = theme?.decor;
+  if (!d || d.enabled !== true || (d.mode || "corners") !== "corners") return;
 
   const isDark = document.documentElement.classList.contains("dark");
   const opacity = isDark ? (d.opacityDark ?? 0.16) : (d.opacityLight ?? 0.28);
-  const size = Number(d.size || 360);
+  const size = Number(d.size ?? 360);
 
-  const base = Number.isFinite(Number(d.baseRotation)) ? Number(d.baseRotation) : 0;
+  // This is the key bit
+  const base = Number(d.baseRotation ?? 0);
+
+  const pickUrl = (key: "tl" | "tr" | "bl" | "br") =>
+    d.corners?.[key]?.imageUrl || d.imageUrl || "";
+
+  const cornerExtra = (key: "tl" | "tr" | "bl" | "br") => {
+    const v = d.corners?.[key]?.rotation;
+    return Number.isFinite(Number(v)) ? Number(v) : 0;
+  };
+
   const autoRotate = d.rotate !== false;
 
-  const pick = (key: DecorCornerKey) => d.corners?.[key]?.imageUrl || d.imageUrl || "";
-  const rot = (key: DecorCornerKey, fallbackDeg: number) => {
-    const v = d.corners?.[key]?.rotation;
-    return Number.isFinite(Number(v)) ? Number(v) : fallbackDeg;
+  const autoCorner = (key: "tl" | "tr" | "bl" | "br") => {
+    if (!autoRotate) return 0;
+    if (key === "tr") return 90;
+    if (key === "bl") return -90;
+    if (key === "br") return 180;
+    return 0; // tl
   };
 
-  const setCorner = (node: HTMLElement, url: string, rotationDeg: number) => {
+  const setCorner = (el: HTMLElement, key: "tl" | "tr" | "bl" | "br") => {
+    const url = pickUrl(key);
     if (!url) return;
-    node.style.width = `${size}px`;
-    node.style.height = `${size}px`;
-    node.style.opacity = String(opacity);
-    node.style.backgroundImage = `url('${url}')`;
-    node.style.backgroundRepeat = "no-repeat";
-    node.style.backgroundSize = "contain";
-    node.style.backgroundPosition = "center";
-    node.style.transform = `rotate(${rotationDeg}deg)`;
+
+    const finalRotation = base + autoCorner(key) + cornerExtra(key);
+
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+    el.style.opacity = String(opacity);
+    el.style.backgroundImage = `url('${url}')`;
+    el.style.backgroundSize = "contain";
+    el.style.backgroundRepeat = "no-repeat";
+    el.style.backgroundPosition = "center";
+    el.style.transform = `rotate(${finalRotation}deg)`;
   };
 
-  setCorner(tl, pick("tl"), rot("tl", base + 0));
-  setCorner(tr, pick("tr"), rot("tr", base + (autoRotate ? 90 : 0)));
-  setCorner(bl, pick("bl"), rot("bl", base + (autoRotate ? -90 : 0)));
-  setCorner(br, pick("br"), rot("br", base + (autoRotate ? 180 : 0)));
+  setCorner(tl, "tl");
+  setCorner(tr, "tr");
+  setCorner(bl, "bl");
+  setCorner(br, "br");
 
-  if (pick("tl") || pick("tr") || pick("bl") || pick("br")) {
+  // show if anything is set
+  if (pickUrl("tl") || pickUrl("tr") || pickUrl("bl") || pickUrl("br")) {
     root.classList.remove("hidden");
   }
 }
+
 
 function renderCouplePhoto(media?: Media) {
   const wrap = el<HTMLElement>("couplePhotoWrap");
