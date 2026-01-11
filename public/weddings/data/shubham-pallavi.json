@@ -124,12 +124,16 @@
   "theme": {
     "decor": {
       "enabled": true,
-      "imageUrl": "/weddings/assets/0bd0893052fc8f9ab1010f9d0bf214ed.png",
       "mode": "corners",
-      "opacityLight": 0.35,
-      "opacityDark": 0.10
+      "imageUrl": "/weddings/assets/e95a8a37776a34847d91ea8df3ac9db4.png",
+      "size": 360,
+      "opacityLight": 0.58,
+      "opacityDark": 0.16,
+      "rotate": true,
+      "baseRotation": 90
     }
   }
+
 
 
 }

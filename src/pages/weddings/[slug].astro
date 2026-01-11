@@ -22,9 +22,7 @@ const calendarUrl = `/weddings/calendars/${slug}.ics`;
 const pageTitle = `Wedding Invitation - ${slug}`;
 ---
 
-
 <WeddingLayout title={pageTitle} description="Wedding invitation details.">
-  <!-- If JS is disabled, we keep content hidden and show a note -->
   <noscript>
     <div class="mx-auto max-w-2xl px-4 py-10">
       <div class="rounded-2xl border p-6 dark:border-neutral-800">
@@ -69,9 +67,14 @@ const pageTitle = `Wedding Invitation - ${slug}`;
   <!-- Protected Content -->
   <div id="protectedContent" class="hidden">
     <div id="themeWrapper" class="relative min-h-screen">
-      <div id="decorLayer" class="pointer-events-none absolute inset-0 hidden"></div>
+      <div id="decorCorners" class="pointer-events-none absolute inset-0 hidden z-0">
+        <div id="decorTL" class="absolute left-0 top-0"></div>
+        <div id="decorTR" class="absolute right-0 top-0"></div>
+        <div id="decorBL" class="absolute left-0 bottom-0"></div>
+        <div id="decorBR" class="absolute right-0 bottom-0"></div>
+      </div>
 
-      <div class="mx-auto max-w-3xl px-4 py-10">
+      <div class="relative z-10 mx-auto max-w-3xl px-4 py-10">
         <div class="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/30">
           <div class="text-xs font-mono tracking-widest text-neutral-500 dark:text-neutral-400">
             WEDDING INVITATION
@@ -144,20 +147,16 @@ const pageTitle = `Wedding Invitation - ${slug}`;
 
           <div class="mt-8 border-t pt-6 dark:border-neutral-800" id="rsvpSection" style="display:none;">
             <h2 class="text-lg font-semibold text-neutral-900 dark:text-white" id="rsvpTitle">RSVP</h2>
-
             <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400" id="rsvpDeadlineText" style="display:none;"></p>
 
             <div class="mt-4" id="rsvpButtonWrap" style="display:none;">
               <a id="rsvpButton" class="inline-block rounded-xl border px-4 py-2 text-sm font-semibold dark:border-neutral-800">
                 RSVP Now
               </a>
-
               <div class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">
                 <a id="rsvpOpenInNewTab" target="_blank" rel="noopener" class="underline">Open in Google Forms</a>
               </div>
             </div>
-
-
 
             <div class="mt-4" id="rsvpEmbedWrap" style="display:none;">
               <iframe
@@ -173,410 +172,14 @@ const pageTitle = `Wedding Invitation - ${slug}`;
 
         </div>
       </div>
+    </div>
   </div>
 
-  <script define:vars={{ detailsUrl, calendarUrl, slug }}>
-    // ---------- Utilities ----------
-    function pad2(n) { return String(n).padStart(2, "0"); }
-
-    function formatLocal(iso) {
-      const d = new Date(iso);
-      const opts = { weekday: "short", year: "numeric", month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" };
-      return d.toLocaleString(undefined, opts);
-    }
-
-    function renderCountdown(el, targetIso, label) {
-      function tick() {
-        const ms = new Date(targetIso).getTime() - Date.now();
-        if (ms <= 0) {
-          el.textContent = `${label}: happening now`;
-          return;
-        }
-        const s = Math.floor(ms / 1000);
-        const days = Math.floor(s / 86400);
-        const hours = Math.floor((s % 86400) / 3600);
-        const mins = Math.floor((s % 3600) / 60);
-        const secs = s % 60;
-        el.textContent = `${days}d ${pad2(hours)}h ${pad2(mins)}m ${pad2(secs)}s`;
-      }
-      tick();
-      setInterval(tick, 1000);
-    }
-
-    function buildGoogleCalendarLink(ev) {
-      const start = new Date(ev?.start);
-      const end = new Date(ev?.end);
-
-      // Guard bad/missing dates
-      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-        console.warn("Invalid start/end in event:", ev);
-        return "https://calendar.google.com/calendar/";
-      }
-
-      const fmt = (d) => {
-        const y = d.getUTCFullYear();
-        const mo = pad2(d.getUTCMonth() + 1);
-        const da = pad2(d.getUTCDate());
-        const h = pad2(d.getUTCHours());
-        const mi = pad2(d.getUTCMinutes());
-        const ss = pad2(d.getUTCSeconds());
-        return `${y}${mo}${da}T${h}${mi}${ss}Z`;
-      };
-
-      const dates = `${fmt(start)}/${fmt(end)}`;
-
-      const title = String(ev?.title || "Event");
-      const notes = String(ev?.notes || "");
-      const locationName = String(ev?.locationName || "");
-      const address = String(ev?.address || "");
-      const locationStr = [locationName, address].map(s => s.trim()).filter(Boolean).join(", ");
-
-      const text = encodeURIComponent(title);
-      const details = encodeURIComponent(notes);
-      const location = encodeURIComponent(locationStr);
-
-      return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}&location=${location}`;
-    }
-
-    const $ = (id) => document.getElementById(id);
-
-    // ---------- UI state ----------
-    const lockScreen = $("lockScreen");
-    const content = $("protectedContent");
-    const input = $("passwordInput");
-    const btn = $("unlockBtn");
-    const error = $("errorMsg");
-    const missing = $("missingMsg");
-    const lockHint = $("lockHint");
-    
-    input.addEventListener("input", () => error.classList.add("hidden"));
-
-    function showContent() {
-      lockScreen.classList.add("hidden");
-      content.classList.remove("hidden");
-    }
-
-    function showLock() {
-      lockScreen.classList.remove("hidden");
-      content.classList.add("hidden");
-    }
-
-    // ---------- Main ----------
-    let DETAILS = null;
-
-    async function loadDetails() {
-      const res = await fetch(detailsUrl, { cache: "no-store" });
-      if (!res.ok) throw new Error("DETAILS_NOT_FOUND");
-      DETAILS = await res.json();
-    }
-
-    function storageKey() {
-      return `weddings-${slug}-unlocked`;
-    }
-
-    function tryAutoUnlock() {
-      return localStorage.getItem(storageKey()) === "true";
-    }
-
-    function setUnlocked() {
-      localStorage.setItem(storageKey(), "true");
-    }
-
-    function setLockHintFromJson() {
-      // Optional fields you may add in JSON:
-      // "passwordHint": "Ask the couple"
-      if (DETAILS && DETAILS.passwordHint) {
-        lockHint.textContent = DETAILS.passwordHint;
-      }
-    }
-
-    function checkPassword(pw) {
-      // JSON must include: "password": "123"
-      return DETAILS && String(pw) === String(DETAILS.password);
-    }
-
-    function applyTheme(theme) {
-      const wrapper = document.getElementById("themeWrapper");
-      if (!wrapper || !theme) return;
-
-      // Reset only styles we control
-      wrapper.style.backgroundImage = "";
-      wrapper.style.backgroundSize = "";
-      wrapper.style.backgroundPosition = "";
-      wrapper.style.backgroundRepeat = "";
-
-      if (theme.background === "gradient" && theme.gradient) {
-        wrapper.className = `min-h-screen bg-gradient-to-br ${theme.gradient}`;
-      }
-
-      if (theme.background === "image" && theme.imageUrl) {
-        wrapper.classList.add("min-h-screen");
-        // wrapper.style.backgroundImage =
-          // `linear-gradient(rgba(255,255,255,0.86), rgba(255,255,255,0.86)), url('${theme.imageUrl}')`;
-        const isDark = document.documentElement.classList.contains("dark");
-
-        // In light mode, fade toward white.
-        // In dark mode, fade toward near-black.
-        const overlay = isDark
-          ? "linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.78))"
-          : "linear-gradient(rgba(255,255,255,0.86), rgba(255,255,255,0.86))";
-
-        wrapper.style.backgroundImage = `${overlay}, url('${theme.imageUrl}')`;
-
-        wrapper.style.backgroundSize = "cover";
-        wrapper.style.backgroundPosition = "center";
-        wrapper.style.backgroundRepeat = "no-repeat";
-      }
-    }
-
-    function applyDecor(theme) {
-      const wrapper = document.getElementById("themeWrapper");
-      const decor = document.getElementById("decorLayer");
-      if (!wrapper || !decor) return;
-
-      decor.classList.add("hidden");
-      decor.style.backgroundImage = "";
-      decor.style.opacity = "";
-
-      const d = theme?.decor;
-      if (!d || d.enabled !== true || !d.imageUrl) return;
-
-      const isDark = document.documentElement.classList.contains("dark");
-      const opacity = isDark ? (d.opacityDark ?? 0.12) : (d.opacityLight ?? 0.22);
-
-      decor.style.opacity = String(opacity);
-
-      if ((d.mode || "corners") === "tile") {
-        decor.style.backgroundImage = `url('${d.imageUrl}')`;
-        decor.style.backgroundRepeat = "repeat";
-        decor.style.backgroundSize = "280px auto";
-        decor.classList.remove("hidden");
-        return;
-      }
-
-      // corners mode
-      decor.style.backgroundImage = `
-        url('${d.imageUrl}'),
-        url('${d.imageUrl}'),
-        url('${d.imageUrl}'),
-        url('${d.imageUrl}')
-      `;
-      decor.style.backgroundRepeat = "no-repeat";
-      decor.style.backgroundPosition = "top left, top right, bottom left, bottom right";
-      decor.style.backgroundSize = "340px auto";
-      decor.classList.remove("hidden");
-    }
-
-    function renderCouplePhoto(media) {
-      const wrap = document.getElementById("couplePhotoWrap");
-      const img = document.getElementById("couplePhoto");
-      if (!wrap || !img) return;
-
-      // Default: completely hidden, no placeholder
-      wrap.classList.add("hidden");
-      img.removeAttribute("src");
-      img.alt = "";
-
-      const photo = media?.couplePhoto;
-      if (!photo || photo.enabled !== true || !photo.src) return;
-
-      img.src = photo.src;
-      img.alt = photo.alt || "";
-
-      // Shape
-      img.classList.remove("rounded-full", "rounded-2xl");
-      const shape = String(photo.shape || "circle").toLowerCase();
-      img.classList.add(shape === "rounded" ? "rounded-2xl" : "rounded-full");
-
-      // Optional size override from JSON
-      const size = Number(photo.size || 112); // 112px ~= h-28/w-28
-      img.style.width = `${size}px`;
-      img.style.height = `${size}px`;
-
-      wrap.classList.remove("hidden");
-    }
-
-    function renderRsvp(rsvp) {
-      const section = document.getElementById("rsvpSection");
-      const title = document.getElementById("rsvpTitle");
-      const deadlineText = document.getElementById("rsvpDeadlineText");
-
-      const buttonWrap = document.getElementById("rsvpButtonWrap");
-      const button = document.getElementById("rsvpButton");
-      const openNewTab = document.getElementById("rsvpOpenInNewTab");
-
-      const embedWrap = document.getElementById("rsvpEmbedWrap");
-      const iframe = document.getElementById("rsvpIframe");
-
-      section.style.display = "none";
-      buttonWrap.style.display = "none";
-      embedWrap.style.display = "none";
-      deadlineText.style.display = "none";
-
-      if (!rsvp || rsvp.enabled !== true) return;
-
-      section.style.display = "block";
-      title.textContent = rsvp.title || "RSVP";
-
-      if (rsvp.deadline) {
-        deadlineText.textContent = `RSVP deadline: ${formatLocal(rsvp.deadline)}`;
-        deadlineText.style.display = "block";
-      }
-
-      const mode = String(rsvp.mode || "button").toLowerCase();
-      const showButton = rsvp.showButton !== false; // default true
-
-      if (rsvp.formUrl) {
-        openNewTab.href = rsvp.formUrl;
-        openNewTab.textContent = rsvp.openInNewTabText || "Open in Google Forms";
-      }
-
-      // Button-only mode
-      if (mode === "button") {
-        if (!rsvp.formUrl) return;
-        button.textContent = rsvp.buttonText || "RSVP Now";
-        button.href = rsvp.formUrl;
-        button.target = "_blank";
-        button.rel = "noopener";
-        buttonWrap.style.display = "block";
-        embedWrap.style.display = "none";
-        return;
-      }
-
-      // Embed mode
-      if (!rsvp.embedUrl) return;
-
-      let iframeLoaded = false;
-
-      if (!showButton) {
-        iframe.src = rsvp.embedUrl;
-        embedWrap.style.display = "block";
-        return;
-      }
-
-      buttonWrap.style.display = "block";
-      button.textContent = rsvp.buttonText || "RSVP (open form here)";
-      button.href = "#";
-      button.target = "";
-      button.rel = "";
-
-      button.onclick = (e) => {
-        e.preventDefault();
-        embedWrap.style.display = "block";
-
-        if (!iframeLoaded) {
-          iframe.src = rsvp.embedUrl;
-          iframeLoaded = true;
-        }
-
-        embedWrap.scrollIntoView({ behavior: "smooth", block: "start" });
-      };
-
-    }
-
-    async function renderInvite() {
-      $("coupleNames").textContent = DETAILS.coupleNames;
-      $("tagline").textContent = DETAILS.tagline;
-      $("weddingDate").textContent = formatLocal(DETAILS.primaryEvent.start);
-      $("lastUpdated").textContent = formatLocal(DETAILS.lastUpdated);
-
-      $("mapBtn").href = DETAILS.primaryVenue.mapUrl;
-
-      const httpsIcs = new URL(calendarUrl, window.location.href).toString();
-      $("subscribeBtn").href = httpsIcs.replace(/^https:/, "webcal:");
-
-      renderCountdown($("countdown"), DETAILS.primaryEvent.start, DETAILS.primaryEvent.title);
-
-      const schedule = $("schedule");
-      schedule.innerHTML = "";
-      for (const ev of DETAILS.schedule || []) {
-        const el = document.createElement("div");
-        el.className = "rounded-2xl border p-4 dark:border-neutral-800";
-
-        const timeText = `${formatLocal(ev.start)} to ${new Date(ev.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-
-        el.innerHTML = `
-          <div class="flex flex-wrap justify-between gap-2">
-            <div class="font-semibold">${ev.title}</div>
-            <div class="text-sm text-amber-600 dark:text-amber-400">${timeText}</div>
-          </div>
-          <div class="mt-2 text-sm text-neutral-500">
-            ${[ev.locationName, ev.address].filter(Boolean).join(", ")}
-          </div>
-          ${ev.notes ? `<div class="mt-2 text-sm text-neutral-500">${ev.notes}</div>` : ""}
-          <div class="mt-3 flex gap-2 text-sm">
-            <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" href="${ev.mapUrl || DETAILS.primaryVenue.mapUrl}" target="_blank" rel="noopener">Maps</a>
-            <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" href="${buildGoogleCalendarLink(ev)}" target="_blank" rel="noopener">Add to Google Calendar</a>
-          </div>
-        `;
-        schedule.appendChild(el);
-      }
-
-      const updates = $("updates");
-      updates.innerHTML = "";
-      for (const u of DETAILS.updates || []) {
-        const el = document.createElement("div");
-        el.className = "rounded-2xl border p-4 text-sm dark:border-neutral-800";
-        el.innerHTML = `
-          <div class="text-xs text-neutral-500">${formatLocal(u.when)}</div>
-          <div class="mt-1">${u.text}</div>
-        `;
-        updates.appendChild(el);
-      }
-
-      const contacts = $("contacts");
-      contacts.innerHTML = "";
-      for (const c of DETAILS.contacts || []) {
-        const el = document.createElement("div");
-        el.innerHTML = `<strong>${c.name}</strong> (${c.role}) · ${c.phone}`;
-        contacts.appendChild(el);
-      }
-      applyTheme(DETAILS.theme);
-      applyDecor(DETAILS.theme);
-      renderCouplePhoto(DETAILS.media);
-      renderRsvp(DETAILS.rsvp);
-
-    }
-
-    async function unlockFlow() {
-      error.classList.add("hidden");
-      missing.classList.add("hidden");
-
-      if (!DETAILS) {
-        try {
-          await loadDetails();
-          setLockHintFromJson();
-        } catch (e) {
-          showLock();
-          missing.classList.remove("hidden");
-          return;
-        }
-      }
-
-      if (tryAutoUnlock()) {
-        showContent();
-        await renderInvite();
-        return;
-      }
-
-      function attempt() {
-        if (checkPassword(input.value || "")) {
-          setUnlocked();
-          showContent();
-          renderInvite().catch(console.error);
-        } else {
-          error.classList.remove("hidden");
-        }
-      }
-
-      btn.addEventListener("click", attempt);
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") attempt();
-      }, { once: false });
-
-      showLock();
-    }
-
-    unlockFlow().catch(console.error);
+  <!-- 1) pass config to window -->
+  <script is:inline define:vars={{ detailsUrl, calendarUrl, slug }}>
+    window.__WEDDING_PAGE__ = { detailsUrl, calendarUrl, slug };
   </script>
+
+  <!-- 2) load bundled entry from /src -->
+  <script type="module" src="/src/scripts/weddings-page.ts"></script>
 </WeddingLayout>
