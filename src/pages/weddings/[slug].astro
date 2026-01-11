@@ -66,8 +66,9 @@ const pageTitle = `Wedding Invitation - ${slug}`;
 
   <!-- Protected Content -->
   <div id="protectedContent" class="hidden">
-    <div id="themeWrapper" class="relative min-h-screen">
-      <div id="decorCorners" class="pointer-events-none absolute inset-0 hidden z-0">
+    <div id="themeWrapper" class="relative min-h-screen overflow-hidden">
+      
+      <div id="decorCorners" class="pointer-events-none absolute inset-0 hidden z-0 dark:opacity-25 transition-opacity duration-300">
         <div id="decorTL" class="absolute left-0 top-0"></div>
         <div id="decorTR" class="absolute right-0 top-0"></div>
         <div id="decorBL" class="absolute left-0 bottom-0"></div>
@@ -75,7 +76,7 @@ const pageTitle = `Wedding Invitation - ${slug}`;
       </div>
 
       <div class="relative z-10 mx-auto max-w-3xl px-4 py-10">
-        <div class="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/30">
+        <div class="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/90 backdrop-blur-sm">
           <div class="text-xs font-mono tracking-widest text-neutral-500 dark:text-neutral-400">
             WEDDING INVITATION
           </div>
@@ -117,15 +118,15 @@ const pageTitle = `Wedding Invitation - ${slug}`;
           </div>
 
           <div class="mt-6 flex flex-wrap gap-3">
-            <a id="mapBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800" target="_blank" rel="noopener">
+            <a id="mapBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800" target="_blank" rel="noopener">
               Open Google Maps
             </a>
 
-            <a id="subscribeBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800">
+            <a id="subscribeBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800">
               Subscribe for calendar updates
             </a>
 
-            <a id="viewCalendarBtn" href={calendarUrl} class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800" target="_blank" rel="noopener">
+            <a id="viewCalendarBtn" href={calendarUrl} class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800" target="_blank" rel="noopener">
               View calendar feed
             </a>
           </div>
@@ -150,7 +151,7 @@ const pageTitle = `Wedding Invitation - ${slug}`;
             <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400" id="rsvpDeadlineText" style="display:none;"></p>
 
             <div class="mt-4" id="rsvpButtonWrap" style="display:none;">
-              <a id="rsvpButton" class="inline-block rounded-xl border px-4 py-2 text-sm font-semibold dark:border-neutral-800">
+              <a id="rsvpButton" class="inline-block rounded-xl border px-4 py-2 text-sm font-semibold dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800">
                 RSVP Now
               </a>
               <div class="mt-2 text-xs text-neutral-600 dark:text-neutral-400">

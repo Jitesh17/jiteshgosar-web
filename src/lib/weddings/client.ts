@@ -245,7 +245,7 @@ function renderCouplePhoto(media?: Media) {
   img.alt = photo.alt || "";
 
   img.classList.remove("rounded-full", "rounded-2xl");
-  const shape = (photo.shape || "circle").toLowerCase();
+  const shape = String(photo.shape || "circle").toLowerCase();
   img.classList.add(shape === "rounded" ? "rounded-2xl" : "rounded-full");
 
   const size = Number(photo.size || 112);

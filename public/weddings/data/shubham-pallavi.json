@@ -125,10 +125,10 @@
     "decor": {
       "enabled": true,
       "mode": "corners",
-      "imageUrl": "/weddings/assets/e95a8a37776a34847d91ea8df3ac9db4.png",
+      "imageUrl": "/weddings/assets/decor-corner-1.png",
       "size": 360,
-      "opacityLight": 0.58,
-      "opacityDark": 0.16,
+      "opacityLight": 0.88,
+      "opacityDark": 0.88,
       "rotate": true,
       "baseRotation": 90
     }
