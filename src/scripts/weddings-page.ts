@@ -1,12 +1,12 @@
 import { bootWeddingPage } from "../lib/weddings/client";
 
-declare global {
-  interface Window {
-    __WEDDING_PAGE__?: { detailsUrl: string; calendarUrl: string; slug: string };
-  }
-}
+const el = document.getElementById("weddingPageScript");
 
-const cfg = window.__WEDDING_PAGE__;
-if (cfg) {
-  bootWeddingPage(cfg);
+if (!el) {
+  console.error("Missing weddingPageScript element");
+} else {
+  const detailsUrl = el.getAttribute("data-details-url") || "";
+  const calendarUrl = el.getAttribute("data-calendar-url") || "";
+  const slug = el.getAttribute("data-slug") || "";
+  bootWeddingPage({ detailsUrl, calendarUrl, slug });
 }

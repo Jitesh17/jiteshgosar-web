@@ -415,6 +415,16 @@ function renderInvite(details: Details, calendarUrl: string) {
   renderRsvp(details.rsvp);
 }
 
+const observer = new MutationObserver(() => {
+  applyDecor(DETAILS?.theme);
+});
+
+observer.observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+
 export async function bootWeddingPage(args: { detailsUrl: string; calendarUrl: string; slug: string }) {
   const { detailsUrl, calendarUrl, slug } = args;
 
