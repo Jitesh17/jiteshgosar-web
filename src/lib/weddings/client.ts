@@ -1,19 +1,24 @@
 // src/lib/weddings/client.ts
 
+type DecorCornerKey = "tl" | "tr" | "bl" | "br";
+
+type DecorConfig = {
+  enabled?: boolean;
+  mode?: "corners" | "tile";
+  imageUrl?: string;
+  opacityDark?: number;
+  opacityLight?: number;
+  size?: number;
+  rotate?: boolean;
+  baseRotation?: number; // starting rotation offset in degrees
+  corners?: Partial<Record<DecorCornerKey, { imageUrl?: string; rotation?: number }>>;
+};
+
 type Theme = {
   background?: "gradient" | "image";
-  gradient?: string;
+  gradient?: string; // e.g. "from-rose-50 via-white to-amber-50"
   imageUrl?: string;
-  decor?: {
-    enabled?: boolean;
-    imageUrl?: string;
-    opacityDark?: number;
-    opacityLight?: number;
-    size?: number;
-    rotate?: boolean;
-    baseRotation?: number;
-    corners?: Record<string, { imageUrl?: string; rotation?: number }>;
-  };
+  decor?: DecorConfig;
 };
 
 type Media = {
@@ -22,7 +27,7 @@ type Media = {
     src?: string;
     alt?: string;
     shape?: "circle" | "rounded";
-    size?: number;
+    size?: number; // px
   };
 };
 
@@ -31,7 +36,7 @@ type Rsvp = {
   title?: string;
   deadline?: string;
   mode?: "button" | "embed";
-  showButton?: boolean;
+  showButton?: boolean; // for embed mode: show button first, then reveal iframe
   formUrl?: string;
   embedUrl?: string;
   buttonText?: string;
@@ -51,30 +56,30 @@ type ScheduleEvent = {
 type Details = {
   coupleNames: string;
   tagline?: string;
+  cityLine?: string;
+
   lastUpdated: string;
   password: string | number;
   passwordHint?: string;
 
-  primaryEvent: { title: string; start: string };
-  primaryVenue: { mapUrl: string };
+  primaryEvent: { title: string; start: string; end?: string };
+  primaryVenue: { name?: string; address?: string; mapUrl: string };
 
   schedule?: ScheduleEvent[];
   updates?: { when: string; text: string }[];
   contacts?: { name: string; role: string; phone: string }[];
 
   theme?: Theme;
+
+  // Support your current JSON where decor is top-level
+  decor?: DecorConfig;
+
   media?: Media;
   rsvp?: Rsvp;
 };
 
 function el<T extends HTMLElement = HTMLElement>(id: string): T | null {
   return document.getElementById(id) as T | null;
-}
-
-function mustEl<T extends HTMLElement = HTMLElement>(id: string): T {
-  const node = el<T>(id);
-  if (!node) throw new Error(`Missing element: #${id}`);
-  return node;
 }
 
 function pad2(n: number): string {
@@ -146,12 +151,13 @@ function applyTheme(theme?: Theme) {
 
   wrapper.classList.add("relative", "min-h-screen");
 
+  // Clear styles we control
   wrapper.style.backgroundImage = "";
   wrapper.style.backgroundSize = "";
   wrapper.style.backgroundPosition = "";
   wrapper.style.backgroundRepeat = "";
 
-  // Remove previous gradient classes (best effort)
+  // Remove previous gradient classes
   wrapper.classList.remove("bg-gradient-to-br");
   [...wrapper.classList].forEach((c) => {
     if (c.startsWith("from-") || c.startsWith("via-") || c.startsWith("to-")) wrapper.classList.remove(c);
@@ -171,7 +177,11 @@ function applyTheme(theme?: Theme) {
   }
 }
 
-function applyDecor(theme?: Theme) {
+function getDecor(details: Details): DecorConfig | undefined {
+  return details.theme?.decor ?? details.decor;
+}
+
+function applyDecor(details: Details) {
   const root = el<HTMLElement>("decorCorners");
   const tl = el<HTMLElement>("decorTL");
   const tr = el<HTMLElement>("decorTR");
@@ -179,26 +189,33 @@ function applyDecor(theme?: Theme) {
   const br = el<HTMLElement>("decorBR");
   if (!root || !tl || !tr || !bl || !br) return;
 
+  // Reset
   root.classList.add("hidden");
   for (const node of [tl, tr, bl, br]) {
     node.style.backgroundImage = "";
     node.style.backgroundRepeat = "no-repeat";
     node.style.backgroundSize = "";
+    node.style.backgroundPosition = "";
     node.style.width = "";
     node.style.height = "";
     node.style.opacity = "";
     node.style.transform = "";
   }
 
-  const d = theme?.decor;
-  if (!d?.enabled || !d.imageUrl) return;
+  const d = getDecor(details);
+  if (!d?.enabled) return;
+  if ((d.mode || "corners") !== "corners") return;
+  if (!d.imageUrl && !d.corners) return;
 
   const isDark = document.documentElement.classList.contains("dark");
   const opacity = isDark ? (d.opacityDark ?? 0.16) : (d.opacityLight ?? 0.28);
   const size = Number(d.size || 360);
 
-  const pick = (key: "tl" | "tr" | "bl" | "br") => d.corners?.[key]?.imageUrl || d.imageUrl || "";
-  const rot = (key: "tl" | "tr" | "bl" | "br", fallbackDeg: number) => {
+  const base = Number.isFinite(Number(d.baseRotation)) ? Number(d.baseRotation) : 0;
+  const autoRotate = d.rotate !== false;
+
+  const pick = (key: DecorCornerKey) => d.corners?.[key]?.imageUrl || d.imageUrl || "";
+  const rot = (key: DecorCornerKey, fallbackDeg: number) => {
     const v = d.corners?.[key]?.rotation;
     return Number.isFinite(Number(v)) ? Number(v) : fallbackDeg;
   };
@@ -209,22 +226,20 @@ function applyDecor(theme?: Theme) {
     node.style.height = `${size}px`;
     node.style.opacity = String(opacity);
     node.style.backgroundImage = `url('${url}')`;
-    node.style.backgroundSize = "contain";
     node.style.backgroundRepeat = "no-repeat";
+    node.style.backgroundSize = "contain";
     node.style.backgroundPosition = "center";
     node.style.transform = `rotate(${rotationDeg}deg)`;
   };
 
-const base = Number(d.baseRotation || 0);
-const autoRotate = d.rotate !== false;
+  setCorner(tl, pick("tl"), rot("tl", base + 0));
+  setCorner(tr, pick("tr"), rot("tr", base + (autoRotate ? 90 : 0)));
+  setCorner(bl, pick("bl"), rot("bl", base + (autoRotate ? -90 : 0)));
+  setCorner(br, pick("br"), rot("br", base + (autoRotate ? 180 : 0)));
 
-setCorner(tl, pick("tl"), rot("tl", base + 0));
-setCorner(tr, pick("tr"), rot("tr", base + (autoRotate ? 90 : 0)));
-setCorner(bl, pick("bl"), rot("bl", base + (autoRotate ? -90 : 0)));
-setCorner(br, pick("br"), rot("br", base + (autoRotate ? 180 : 0)));
-
-
-  if (pick("tl") || pick("tr") || pick("bl") || pick("br")) root.classList.remove("hidden");
+  if (pick("tl") || pick("tr") || pick("bl") || pick("br")) {
+    root.classList.remove("hidden");
+  }
 }
 
 function renderCouplePhoto(media?: Media) {
@@ -232,6 +247,7 @@ function renderCouplePhoto(media?: Media) {
   const img = el<HTMLImageElement>("couplePhoto");
   if (!wrap || !img) return;
 
+  // No placeholder if missing
   wrap.classList.add("hidden");
   img.removeAttribute("src");
   img.alt = "";
@@ -328,13 +344,28 @@ function renderRsvp(rsvp?: Rsvp) {
 }
 
 function renderInvite(details: Details, calendarUrl: string) {
-  // These are required; if missing, better to throw early than half-render silently
-  mustEl("coupleNames").textContent = details.coupleNames;
-  mustEl("weddingDate").textContent = formatLocal(details.primaryEvent.start);
-  mustEl("lastUpdated").textContent = formatLocal(details.lastUpdated);
+  const coupleNames = el<HTMLElement>("coupleNames");
+  if (coupleNames) coupleNames.textContent = details.coupleNames;
 
-  const tagline = el("tagline");
+  const tagline = el<HTMLElement>("tagline");
   if (tagline) tagline.textContent = details.tagline || "";
+
+  const cityLine = el<HTMLElement>("cityLine");
+  if (cityLine) {
+    if (details.cityLine) {
+      cityLine.textContent = details.cityLine;
+      cityLine.classList.remove("hidden");
+    } else {
+      cityLine.textContent = "";
+      cityLine.classList.add("hidden");
+    }
+  }
+
+  const weddingDate = el<HTMLElement>("weddingDate");
+  if (weddingDate) weddingDate.textContent = formatLocal(details.primaryEvent.start);
+
+  const lastUpdated = el<HTMLElement>("lastUpdated");
+  if (lastUpdated) lastUpdated.textContent = formatLocal(details.lastUpdated);
 
   const mapBtn = el<HTMLAnchorElement>("mapBtn");
   if (mapBtn) mapBtn.href = details.primaryVenue.mapUrl;
@@ -343,87 +374,120 @@ function renderInvite(details: Details, calendarUrl: string) {
   const subscribeBtn = el<HTMLAnchorElement>("subscribeBtn");
   if (subscribeBtn) subscribeBtn.href = httpsIcs.replace(/^https:/, "webcal:");
 
-  const countdown = el("countdown");
-  if (countdown) renderCountdown(countdown, details.primaryEvent.start, details.primaryEvent.title);
+  // Countdown (clear previous if any)
+  const countdown = el<HTMLElement>("countdown");
+  const countdownHolder = (window as unknown as { __weddingCountdownId?: number });
+  if (countdown && details.primaryEvent.start) {
+    if (countdownHolder.__weddingCountdownId) window.clearInterval(countdownHolder.__weddingCountdownId);
+    countdownHolder.__weddingCountdownId = renderCountdown(countdown, details.primaryEvent.start, details.primaryEvent.title);
+  }
 
-  // NOTE: You still use innerHTML below. It works, but it’s injection-prone.
-  // If you want, I can rewrite schedule/updates rendering using createElement + textContent only.
-  const schedule = el<HTMLElement>("schedule");
-  if (schedule) {
-    schedule.innerHTML = "";
+  // Schedule
+  const scheduleWrap = el<HTMLElement>("schedule");
+  if (scheduleWrap) {
+    scheduleWrap.innerHTML = "";
     for (const ev of details.schedule || []) {
       const card = document.createElement("div");
       card.className = "rounded-2xl border p-4 dark:border-neutral-800";
 
-      const timeText = `${formatLocal(ev.start)} to ${new Date(ev.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      const top = document.createElement("div");
+      top.className = "flex flex-wrap justify-between gap-2";
 
-      card.innerHTML = `
-        <div class="flex flex-wrap justify-between gap-2">
-          <div class="font-semibold"></div>
-          <div class="text-sm text-amber-600 dark:text-amber-400"></div>
-        </div>
-        <div class="mt-2 text-sm text-neutral-500"></div>
-        <div class="mt-3 flex gap-2 text-sm">
-          <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" target="_blank" rel="noopener">Maps</a>
-          <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" target="_blank" rel="noopener">Add to Google Calendar</a>
-        </div>
-      `;
+      const title = document.createElement("div");
+      title.className = "font-semibold";
+      title.textContent = ev.title;
 
-      (card.querySelector(".font-semibold") as HTMLElement).textContent = ev.title;
-      (card.querySelector(".text-amber-600") as HTMLElement).textContent = timeText;
-      (card.querySelector(".text-neutral-500") as HTMLElement).textContent = [ev.locationName, ev.address].filter(Boolean).join(", ");
+      const time = document.createElement("div");
+      time.className = "text-sm text-amber-600 dark:text-amber-400";
+      time.textContent = `${formatLocal(ev.start)} to ${new Date(ev.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 
-      const links = card.querySelectorAll("a");
-      (links[0] as HTMLAnchorElement).href = ev.mapUrl || details.primaryVenue.mapUrl;
-      (links[1] as HTMLAnchorElement).href = buildGoogleCalendarLink(ev);
+      top.appendChild(title);
+      top.appendChild(time);
 
-      schedule.appendChild(card);
+      const place = document.createElement("div");
+      place.className = "mt-2 text-sm text-neutral-500";
+      place.textContent = [ev.locationName, ev.address].filter(Boolean).join(", ");
+
+      card.appendChild(top);
+      card.appendChild(place);
+
+      if (ev.notes) {
+        const notes = document.createElement("div");
+        notes.className = "mt-2 text-sm text-neutral-500";
+        notes.textContent = ev.notes;
+        card.appendChild(notes);
+      }
+
+      const links = document.createElement("div");
+      links.className = "mt-3 flex gap-2 text-sm";
+
+      const maps = document.createElement("a");
+      maps.className = "rounded-xl border px-3 py-1 dark:border-neutral-800";
+      maps.textContent = "Maps";
+      maps.href = ev.mapUrl || details.primaryVenue.mapUrl;
+      maps.target = "_blank";
+      maps.rel = "noopener";
+
+      const gcal = document.createElement("a");
+      gcal.className = "rounded-xl border px-3 py-1 dark:border-neutral-800";
+      gcal.textContent = "Add to Google Calendar";
+      gcal.href = buildGoogleCalendarLink(ev);
+      gcal.target = "_blank";
+      gcal.rel = "noopener";
+
+      links.appendChild(maps);
+      links.appendChild(gcal);
+      card.appendChild(links);
+
+      scheduleWrap.appendChild(card);
     }
   }
 
-  const updates = el<HTMLElement>("updates");
-  if (updates) {
-    updates.innerHTML = "";
+  // Updates
+  const updatesWrap = el<HTMLElement>("updates");
+  if (updatesWrap) {
+    updatesWrap.innerHTML = "";
     for (const u of details.updates || []) {
       const row = document.createElement("div");
       row.className = "rounded-2xl border p-4 text-sm dark:border-neutral-800";
-      row.innerHTML = `
-        <div class="text-xs text-neutral-500"></div>
-        <div class="mt-1"></div>
-      `;
-      (row.children[0] as HTMLElement).textContent = formatLocal(u.when);
-      (row.children[1] as HTMLElement).textContent = u.text;
-      updates.appendChild(row);
+
+      const when = document.createElement("div");
+      when.className = "text-xs text-neutral-500";
+      when.textContent = formatLocal(u.when);
+
+      const text = document.createElement("div");
+      text.className = "mt-1";
+      text.textContent = u.text;
+
+      row.appendChild(when);
+      row.appendChild(text);
+      updatesWrap.appendChild(row);
     }
   }
 
-  const contacts = el<HTMLElement>("contacts");
-  if (contacts) {
-    contacts.innerHTML = "";
+  // Contacts
+  const contactsWrap = el<HTMLElement>("contacts");
+  if (contactsWrap) {
+    contactsWrap.innerHTML = "";
     for (const c of details.contacts || []) {
       const row = document.createElement("div");
-      row.innerHTML = `<strong></strong> <span></span>`;
-      (row.querySelector("strong") as HTMLElement).textContent = c.name;
-      (row.querySelector("span") as HTMLElement).textContent = `(${c.role}) · ${c.phone}`;
-      contacts.appendChild(row);
+      const strong = document.createElement("strong");
+      strong.textContent = c.name;
+
+      const span = document.createElement("span");
+      span.textContent = ` (${c.role}) · ${c.phone}`;
+
+      row.appendChild(strong);
+      row.appendChild(span);
+      contactsWrap.appendChild(row);
     }
   }
 
   applyTheme(details.theme);
-  applyDecor(details.theme);
+  applyDecor(details);
   renderCouplePhoto(details.media);
   renderRsvp(details.rsvp);
 }
-
-const observer = new MutationObserver(() => {
-  applyDecor(DETAILS?.theme);
-});
-
-observer.observe(document.documentElement, {
-  attributes: true,
-  attributeFilter: ["class"],
-});
-
 
 export async function bootWeddingPage(args: { detailsUrl: string; calendarUrl: string; slug: string }) {
   const { detailsUrl, calendarUrl, slug } = args;
@@ -439,7 +503,6 @@ export async function bootWeddingPage(args: { detailsUrl: string; calendarUrl: s
   input?.addEventListener("input", () => error?.classList.add("hidden"));
 
   let details: Details | null = null;
-
   const storageKey = `weddings-${slug}-unlocked`;
 
   const showContent = () => {
@@ -478,6 +541,12 @@ export async function bootWeddingPage(args: { detailsUrl: string; calendarUrl: s
   try {
     await load();
     setLockHintFromJson();
+
+    // Re-apply decor when dark mode toggles (fixes opacityDark not updating)
+    const observer = new MutationObserver(() => {
+      if (details) applyDecor(details);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
     if (localStorage.getItem(storageKey) === "true") {
       showContent();

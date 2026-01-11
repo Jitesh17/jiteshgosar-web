@@ -1,35 +1,54 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import WeddingLayout from "../../layouts/WeddingLayout.astro";
+import fs from "node:fs";
+import path from "node:path";
 
-/*
-  List the weddings you want to publish here.
-  "slug" must match the JSON filename in: public/weddings/data/<slug>.json
-*/
-const weddings = [
-  { slug: "friend-a", label: "Friend A" },
-  { slug: "friend-b", label: "Friend B" }
-];
+const baseUrl = import.meta.env.BASE_URL;
+
+const dataDir = path.join(process.cwd(), "public", "weddings", "data");
+const files = fs.readdirSync(dataDir).filter((f) => f.endsWith(".json") && f !== "template.json");
+
+const items = files
+  .map((f) => {
+    const slug = f.replace(/\.json$/, "");
+    const full = path.join(dataDir, f);
+    const raw = fs.readFileSync(full, "utf-8");
+    const json = JSON.parse(raw);
+    return {
+      slug,
+      coupleNames: json.coupleNames || slug,
+      cityLine: json.cityLine || "",
+      listed: json.listed === true,
+      lastUpdated: json.lastUpdated || "",
+    };
+  })
+  .filter((x) => x.listed)
+  .sort((a, b) => String(b.lastUpdated).localeCompare(String(a.lastUpdated)));
 ---
 
-<BaseLayout title="Weddings" description="Wedding invitation pages.">
+<WeddingLayout title="Weddings" description="Wedding invitations">
   <div class="mx-auto max-w-3xl px-4 py-10">
-    <h1 class="text-3xl font-bold text-neutral-900 dark:text-white">Wedding Invitations</h1>
-    <p class="mt-2 text-neutral-600 dark:text-neutral-400">Select an invitation:</p>
+    <h1 class="text-3xl font-bold text-neutral-900 dark:text-white">Weddings</h1>
+    <p class="mt-2 text-neutral-600 dark:text-neutral-400">
+      Private invitations. Only listed links show here.
+    </p>
 
-    <div class="mt-6 grid gap-4">
-      {weddings.map((w) => (
-        <a
-          class="rounded-2xl border p-5 transition hover:shadow-sm dark:border-neutral-800"
-          href={`/weddings/${w.slug}/`}
-        >
-          <div class="text-lg font-semibold text-neutral-900 dark:text-white">{w.label}</div>
-          <div class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">/weddings/{w.slug}/</div>
-        </a>
-      ))}
-    </div>
-
-    <div class="mt-10 rounded-2xl border p-5 text-sm text-neutral-600 dark:border-neutral-800 dark:text-neutral-400">
-      Tip: share the direct wedding link. Guests will be asked for a password before viewing details.
-    </div>
+    {items.length === 0 ? (
+      <div class="mt-6 rounded-2xl border p-6 text-neutral-600 dark:border-neutral-800 dark:text-neutral-400">
+        No invitations listed yet.
+      </div>
+    ) : (
+      <div class="mt-6 grid gap-3">
+        {items.map((it) => (
+          <a
+            class="rounded-2xl border p-5 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900/40"
+            href={`${baseUrl}weddings/${it.slug}/`}
+          >
+            <div class="text-lg font-semibold text-neutral-900 dark:text-white">{it.coupleNames}</div>
+            {it.cityLine ? <div class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">{it.cityLine}</div> : null}
+          </a>
+        ))}
+      </div>
+    )}
   </div>
-</BaseLayout>
+</WeddingLayout>
