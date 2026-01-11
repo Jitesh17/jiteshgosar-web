@@ -16,7 +16,7 @@ END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
 UID:shubham-pallavi-tilak-lagnaotsav@jiteshgosar.com
-DTSTAMP:20260111T133958Z
+DTSTAMP:20260111T154253Z
 DTSTART;TZID=Asia/Kolkata:20260204T160000
 DTEND;TZID=Asia/Kolkata:20260204T180000
 SUMMARY:Lagnaotsav (Tilak)
@@ -25,7 +25,7 @@ DESCRIPTION:Start time as per card. End time is an estimate for calendar conveni
 END:VEVENT
 BEGIN:VEVENT
 UID:shubham-pallavi-matrika-mandapachchadan@jiteshgosar.com
-DTSTAMP:20260111T133958Z
+DTSTAMP:20260111T154253Z
 DTSTART;TZID=Asia/Kolkata:20260205T100000
 DTEND;TZID=Asia/Kolkata:20260205T120000
 SUMMARY:Matrika Pujan & Mandapachchadan
@@ -34,7 +34,7 @@ DESCRIPTION:Start time as per card. End time is an estimate for calendar conveni
 END:VEVENT
 BEGIN:VEVENT
 UID:shubham-pallavi-sagai-haldi@jiteshgosar.com
-DTSTAMP:20260111T133958Z
+DTSTAMP:20260111T154253Z
 DTSTART;TZID=Asia/Kolkata:20260207T110000
 DTEND;TZID=Asia/Kolkata:20260207T130000
 SUMMARY:Sagai & Haldi
@@ -43,7 +43,7 @@ DESCRIPTION:Start time as per card. End time is an estimate for calendar conveni
 END:VEVENT
 BEGIN:VEVENT
 UID:shubham-pallavi-sangeet@jiteshgosar.com
-DTSTAMP:20260111T133958Z
+DTSTAMP:20260111T154253Z
 DTSTART;TZID=Asia/Kolkata:20260207T190000
 DTEND;TZID=Asia/Kolkata:20260207T220000
 SUMMARY:Sangeet
@@ -52,7 +52,7 @@ DESCRIPTION:Start time as per card. End time is an estimate for calendar conveni
 END:VEVENT
 BEGIN:VEVENT
 UID:shubham-pallavi-saat-phere-pani-grahan@jiteshgosar.com
-DTSTAMP:20260111T133958Z
+DTSTAMP:20260111T154253Z
 DTSTART;TZID=Asia/Kolkata:20260208T110000
 DTEND;TZID=Asia/Kolkata:20260208T130000
 SUMMARY:Pani Grahan Sanskar (Saat Phere)
@@ -61,7 +61,7 @@ DESCRIPTION:Start time as per card. End time is an estimate for calendar conveni
 END:VEVENT
 BEGIN:VEVENT
 UID:shubham-pallavi-aashirwad-samaroh@jiteshgosar.com
-DTSTAMP:20260111T133958Z
+DTSTAMP:20260111T154253Z
 DTSTART;TZID=Asia/Kolkata:20260208T200000
 DTEND;TZID=Asia/Kolkata:20260208T230000
 SUMMARY:Shubh Aashirwad Samaroh
@@ -70,7 +70,7 @@ DESCRIPTION:Start time as per card. End time is an estimate for calendar conveni
 END:VEVENT
 BEGIN:VEVENT
 UID:shubham-pallavi-ceremony@jiteshgosar.com
-DTSTAMP:20260111T133958Z
+DTSTAMP:20260111T154253Z
 DTSTART;TZID=Asia/Kolkata:20260208T110000
 DTEND;TZID=Asia/Kolkata:20260208T130000
 SUMMARY:Pani Grahan Sanskar (Saat Phere)

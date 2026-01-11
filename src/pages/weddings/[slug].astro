@@ -4,15 +4,29 @@ import fs from "node:fs";
 import path from "node:path";
 
 export async function getStaticPaths() {
-  const dataDir = path.join(process.cwd(), "public", "weddings", "data");
-  const files = fs.readdirSync(dataDir);
+  try {
+    const dataDir = path.join(process.cwd(), "public", "weddings", "data");
 
-  const slugs = files
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => f.replace(/\.json$/, ""))
-    .filter((s) => s !== "template");
+    // 1. Safety Check: Ensure directory exists prevents build crash
+    if (!fs.existsSync(dataDir)) {
+      console.warn(`[getStaticPaths] Warning: Data directory not found at ${dataDir}`);
+      return []; 
+    }
 
-  return slugs.map((slug) => ({ params: { slug } }));
+    const files = fs.readdirSync(dataDir);
+
+    const slugs = files
+      .filter((f) => f.endsWith(".json"))
+      .map((f) => f.replace(/\.json$/, ""))
+      .filter((s) => s !== "template");
+
+    return slugs.map((slug) => ({ params: { slug } }));
+
+  } catch (error) {
+    // 2. Catch permissions or other FS errors so build finishes
+    console.error("[getStaticPaths] Error generating paths:", error);
+    return [];
+  }
 }
 
 const { slug } = Astro.params;
@@ -20,12 +34,9 @@ const { slug } = Astro.params;
 // Critical for GitHub Pages subpath deploys
 const baseUrl = import.meta.env.BASE_URL;
 
-// Always build URLs with baseUrl so it works on:
-// - https://user.github.io/repo/...
-// - custom domain via Cloudflare
+// URL Construction
 const detailsUrl = `${baseUrl}weddings/data/${slug}.json`;
 const calendarUrl = `${baseUrl}weddings/calendars/${slug}.ics`;
-
 const pageTitle = `Wedding Invitation - ${slug}`;
 ---
 
@@ -84,68 +95,47 @@ const pageTitle = `Wedding Invitation - ${slug}`;
 
       <div class="card-joy relative z-10 mx-auto max-w-3xl shadow-2xl">
         <div class="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/90 backdrop-blur-sm">
-          <div class="text-xs font-mono tracking-widest text-neutral-500 dark:text-neutral-400">
-            WEDDING INVITATION
-          </div>
-
-          <div class="mt-3 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div class="min-w-0">
-              <h1 id="coupleNames" class="font-heading text-6xl font-medium tracking-wide text-neutral-900 dark:text-white"></h1>
-              <p id="tagline" class="mt-3 text-neutral-600 dark:text-neutral-400"></p>
-              <p id="cityLine" class="mt-2 text-sm text-neutral-500 dark:text-neutral-400"></p>
-            </div>
-
-            <div id="couplePhotoWrap" class="shrink-0 hidden">
-              <img
-                id="couplePhoto"
-                alt=""
-                class="object-cover ring-1 ring-neutral-200 dark:ring-neutral-800"
-                loading="lazy"
-                decoding="async"
-              />
+          <div class="text-center space-y-4 mt-6">
+            <h1 id="coupleNames" class="font-heading text-6xl sm:text-7xl font-medium tracking-wide text-neutral-900 dark:text-white leading-tight">
+              Loading...
+            </h1>
+            <p id="tagline" class="font-heading text-xl italic text-neutral-600 dark:text-neutral-400"></p>
+            
+            <div class="py-4">
+              <div id="weddingDate" class="font-heading text-3xl text-neutral-800 dark:text-neutral-200"></div>
+              <div id="cityLine" class="font-body text-sm uppercase tracking-widest text-neutral-500 mt-2"></div>
             </div>
           </div>
 
-          <div class="mt-6 flex flex-wrap gap-3 text-sm">
-            <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
-              <span class="font-semibold">Date:</span>
-              <span id="weddingDate"></span>
-            </div>
+          <div id="countdown" class="flex justify-center my-8"></div>
 
-            <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
-              <span class="font-semibold">Countdown:</span>
-              <span id="countdown"></span>
-            </div>
-
-            <div class="rounded-xl border px-3 py-2 dark:border-neutral-800">
-              <span class="font-semibold">Updated:</span>
-              <span id="lastUpdated"></span>
-            </div>
-          </div>
-
-          <div class="mt-6 flex flex-wrap gap-3">
-            <a id="mapBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800" target="_blank" rel="noopener">
-              Open Google Maps
+          <div class="flex flex-col items-center gap-4 mb-12">
+            
+            <a id="mapBtn" class="px-8 py-3 rounded-full bg-neutral-900 text-white font-medium text-sm hover:bg-neutral-800 transition-all hover:scale-105 dark:bg-white dark:text-black cursor-pointer shadow-lg shadow-neutral-500/20" target="_blank" rel="noopener">
+              Open Location Map
             </a>
 
-            <a id="subscribeBtn" class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800">
-              Subscribe for calendar updates
-            </a>
+            <div class="flex flex-row gap-3">
+              <a id="subscribeBtn" class="px-5 py-2 rounded-full border border-neutral-300 text-neutral-600 font-medium text-xs hover:border-black hover:text-black transition-colors dark:border-neutral-700 dark:text-neutral-400 dark:hover:text-white cursor-pointer">
+                ↻ Sync Calendar
+              </a>
+              
+              <a id="viewCalendarBtn" class="px-5 py-2 rounded-full border border-neutral-300 text-neutral-600 font-medium text-xs hover:border-black hover:text-black transition-colors dark:border-neutral-700 dark:text-neutral-400 dark:hover:text-white cursor-pointer" target="_blank" rel="noopener">
+                ↓ Save to Calendar
+              </a>
+            </div>
 
-            <a id="viewCalendarBtn" href={calendarUrl} class="rounded-xl border px-4 py-2 text-sm dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800" target="_blank" rel="noopener">
-              View calendar feed
-            </a>
-          </div>
-
+          </div>   
+          
           <div class="mt-8 border-t pt-6 dark:border-neutral-800">
             <h2 class="font-heading text-3xl text-neutral-900 dark:text-white mb-6 border-b border-neutral-200 dark:border-neutral-800 pb-2">Schedule</h2>
             <div id="schedule" class="mt-4 grid gap-3"></div>
           </div>
 
-          <div class="mt-8 border-t pt-6 dark:border-neutral-800">
+          <!-- <div class="mt-8 border-t pt-6 dark:border-neutral-800">
             <h2 class="font-heading text-3xl text-neutral-900 dark:text-white mb-6 border-b border-neutral-200 dark:border-neutral-800 pb-2">Updates</h2>
             <div id="updates" class="mt-4 grid gap-3"></div>
-          </div>
+          </div> -->
 
           <div class="mt-8 border-t pt-6 dark:border-neutral-800">
             <h2 class="font-heading text-3xl text-neutral-900 dark:text-white mb-6 border-b border-neutral-200 dark:border-neutral-800 pb-2">Contacts</h2>
@@ -214,26 +204,64 @@ const pageTitle = `Wedding Invitation - ${slug}`;
     }
 
     function renderCountdown(el, targetIso, label) {
-      if (!el) return;
-      let timer = null;
+      if (!el) return null;
+
+      // 1. SETUP: Create the fancy block structure
+      if (!el.querySelector('.countdown-unit')) {
+        // UPDATED: Added "w-full" and "justify-center" to force centering
+        el.className = "flex flex-wrap gap-6 sm:gap-10 justify-center w-full my-6"; 
+        el.innerHTML = `
+          <div class="countdown-unit text-center min-w-[60px]">
+            <div class="font-heading text-4xl sm:text-5xl text-neutral-900 dark:text-white leading-none" data-type="d">0</div>
+            <div class="text-[10px] uppercase tracking-widest text-neutral-500 mt-2 font-medium">Days</div>
+          </div>
+          <div class="countdown-unit text-center min-w-[60px]">
+            <div class="font-heading text-4xl sm:text-5xl text-neutral-900 dark:text-white leading-none" data-type="h">00</div>
+            <div class="text-[10px] uppercase tracking-widest text-neutral-500 mt-2 font-medium">Hrs</div>
+          </div>
+          <div class="countdown-unit text-center min-w-[60px]">
+            <div class="font-heading text-4xl sm:text-5xl text-neutral-900 dark:text-white leading-none" data-type="m">00</div>
+            <div class="text-[10px] uppercase tracking-widest text-neutral-500 mt-2 font-medium">Mins</div>
+          </div>
+          <div class="countdown-unit text-center min-w-[60px]">
+            <div class="font-heading text-4xl sm:text-5xl text-neutral-900 dark:text-white leading-none" data-type="s">00</div>
+            <div class="text-[10px] uppercase tracking-widest text-neutral-500 mt-2 font-medium">Secs</div>
+          </div>
+        `;
+      }
+
+      const dEl = el.querySelector('[data-type="d"]');
+      const hEl = el.querySelector('[data-type="h"]');
+      const mEl = el.querySelector('[data-type="m"]');
+      const sEl = el.querySelector('[data-type="s"]');
+      const pad = (n) => String(n).padStart(2, "0");
 
       function tick() {
         const ms = new Date(targetIso).getTime() - Date.now();
+        
         if (ms <= 0) {
-          el.textContent = label ? `${label}: happening now` : "Happening now";
-          if (timer) clearInterval(timer);
-          return;
+          el.innerHTML = `<div class="font-heading text-3xl text-neutral-900 dark:text-white animate-pulse">Happening now</div>`;
+          return false;
         }
+
         const s = Math.floor(ms / 1000);
         const days = Math.floor(s / 86400);
         const hours = Math.floor((s % 86400) / 3600);
         const mins = Math.floor((s % 3600) / 60);
         const secs = s % 60;
-        el.textContent = `${days}d ${pad2(hours)}h ${pad2(mins)}m ${pad2(secs)}s`;
+
+        if (dEl) dEl.textContent = days;
+        if (hEl) hEl.textContent = pad(hours);
+        if (mEl) mEl.textContent = pad(mins);
+        if (sEl) sEl.textContent = pad(secs);
+        
+        return true;
       }
 
-      tick();
-      timer = setInterval(tick, 1000);
+      if (tick()) {
+        return setInterval(() => { tick(); }, 1000);
+      }
+      return null;
     }
 
     function buildGoogleCalendarLink(ev) {
@@ -465,82 +493,151 @@ const pageTitle = `Wedding Invitation - ${slug}`;
       };
     }
 
-    function renderInvite(details) {
-      $("coupleNames").textContent = details.coupleNames || "";
-      $("tagline").textContent = details.tagline || "";
-      $("cityLine").textContent = details.cityLine || "";
+function renderInvite(details) {
+      try {
+        // --- 1. Basic Text Details ---
+        $("coupleNames").textContent = details.coupleNames || "";
+        $("tagline").textContent = details.tagline || "";
+        $("cityLine").textContent = details.cityLine || "";
 
-      $("weddingDate").textContent = details?.primaryEvent?.start ? formatLocal(details.primaryEvent.start) : "";
-      $("lastUpdated").textContent = details?.lastUpdated ? formatLocal(details.lastUpdated) : "";
+        const startIso = details?.primaryEvent?.start;
+        $("weddingDate").textContent = startIso ? formatLocal(startIso) : "";
 
-      if (details?.primaryVenue?.mapUrl) $("mapBtn").href = details.primaryVenue.mapUrl;
+        if (details?.primaryVenue?.mapUrl) {
+          $("mapBtn").href = details.primaryVenue.mapUrl;
+        }
 
-      const httpsIcs = new URL(calendarUrl, window.location.href).toString();
-      $("subscribeBtn").href = httpsIcs.replace(/^https:/, "webcal:");
+        // --- 2. Calendar Links ---
+        // Safety: Ensure calendarUrl is defined in scope, else ignore
+        if (typeof calendarUrl !== 'undefined') {
+          try {
+            const httpsIcs = new URL(calendarUrl, window.location.href).toString();
+            $("subscribeBtn").href = httpsIcs.replace(/^https:/, "webcal:");
+          } catch (e) { console.warn("Calendar URL error", e); }
+        }
 
-      if (details?.primaryEvent?.start) {
-        renderCountdown($("countdown"), details.primaryEvent.start, details?.primaryEvent?.title || "");
+        if (startIso) {
+          renderCountdown($("countdown"), startIso, details?.primaryEvent?.title || "");
+        }
+
+        // --- 3. Render Schedule (Timeline Style) ---
+        const schedule = $("schedule");
+        
+        // Safety check: ensure the DOM element actually exists before trying to modify it
+        if (schedule && schedule.style) { 
+          schedule.innerHTML = '<div class="relative ml-3 space-y-0 border-l border-neutral-200 dark:border-neutral-800" id="timelineContainer"></div>';
+          
+          // Use getElementById directly to ensure we aren't running querySelector on a dummy object
+          const timeline = document.getElementById("timelineContainer");
+
+          if (timeline) {
+            for (const ev of details.schedule || []) {
+              const item = document.createElement("div");
+              item.className = "relative pb-8 pl-8 last:pb-0";
+
+              const endTime = ev?.end
+                ? new Date(ev.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "";
+
+              const startObj = ev?.start ? new Date(ev.start) : null;
+              const timeStr = startObj
+                ? startObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "";
+              const dateStr = startObj
+                ? startObj.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })
+                : "";
+
+              item.innerHTML = `
+                <div class="absolute -left-[5px] top-1 h-2.5 w-2.5 rounded-full bg-neutral-300 ring-4 ring-white dark:bg-neutral-600 dark:ring-neutral-900"></div>
+                
+                <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+                  <h3 class="font-heading text-xl font-medium text-neutral-900 dark:text-white">${ev.title || "Event"}</h3>
+                  <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                    ${dateStr} <span class="mx-1 opacity-50">|</span> ${timeStr} ${endTime ? `- ${endTime}` : ""}
+                  </span>
+                </div>
+
+                <div class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                  ${[ev.locationName, ev.address].filter(Boolean).join(", ")}
+                </div>
+                
+                ${ev.notes ? `<div class="mt-2 text-sm italic text-neutral-500 dark:text-neutral-500">${ev.notes}</div>` : ""}
+
+                <div class="mt-3 flex gap-3 text-xs font-medium">
+                   ${(ev.mapUrl || details?.primaryVenue?.mapUrl) ? `
+                    <a class="flex items-center gap-1 hover:text-black dark:hover:text-white transition-colors text-neutral-500" 
+                       href="${ev.mapUrl || details?.primaryVenue?.mapUrl}" target="_blank" rel="noopener">
+                       <span>📍</span> Map
+                    </a>` : ""}
+                   <a class="flex items-center gap-1 hover:text-black dark:hover:text-white transition-colors text-neutral-500" 
+                      href="${buildGoogleCalendarLink(ev)}" target="_blank" rel="noopener">
+                      <span>📅</span> Add to Cal
+                   </a>
+                </div>
+              `;
+              timeline.appendChild(item);
+            }
+          }
+        }
+
+        // --- 4. Render Updates ---
+        const updates = $("updates");
+        if (updates && updates.style) {
+          updates.innerHTML = "";
+          for (const u of details.updates || []) {
+            const el = document.createElement("div");
+            el.className = "rounded-xl bg-neutral-50 p-4 text-sm dark:bg-white/5 border border-transparent dark:border-neutral-800";
+            el.innerHTML = `
+              <div class="mb-1 text-xs font-bold uppercase tracking-wide text-neutral-400">${u.when ? formatLocal(u.when) : "Update"}</div>
+              <div class="text-neutral-700 dark:text-neutral-300">${u.text || ""}</div>
+            `;
+            updates.appendChild(el);
+          }
+        }
+
+        // --- 5. Render Contacts (CRASH FIX APPLIED) ---
+        const contacts = $("contacts");
+        if (contacts && contacts.style) {
+          contacts.innerHTML = "";
+          contacts.className = "mt-4 grid gap-3 sm:grid-cols-2";
+
+          for (const c of details.contacts || []) {
+            const el = document.createElement("div");
+            el.className = "flex items-center gap-3 rounded-xl border p-3 dark:border-neutral-800";
+
+            // FIX: Force convert to string to prevent ".replace is not a function" error
+            const phoneRaw = String(c.phone || ""); 
+            const isPhone = phoneRaw.length > 3; // Basic check
+            const link = isPhone ? `tel:${phoneRaw.replace(/[^\d+]/g, '')}` : "#";
+
+            el.innerHTML = `
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-lg">
+                ${c.icon || "📞"}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="truncate font-medium text-neutral-900 dark:text-white">${c.name || "Contact"}</div>
+                <div class="truncate text-xs text-neutral-500">${c.role || "Family"}</div>
+              </div>
+              ${isPhone ? `
+                <a href="${link}" class="rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition-transform hover:scale-105 dark:bg-white dark:text-black">
+                  Call
+                </a>
+              ` : ""}
+            `;
+            contacts.appendChild(el);
+          }
+        }
+
+        applyTheme(details.theme);
+        applyDecor(details);
+        renderCouplePhoto(details);
+        renderRsvp(details.rsvp);
+
+      } catch (err) {
+        console.error("CRITICAL RENDER ERROR:", err);
+        // Optional: alert user or show error on screen
+        // alert("Error loading invitation details. Please check console.");
       }
-
-      // Schedule
-      const schedule = $("schedule");
-      schedule.innerHTML = "";
-      for (const ev of details.schedule || []) {
-        const el = document.createElement("div");
-        el.className = "rounded-2xl p-6 bg-neutral-50 dark:bg-white/5 mb-4";
-
-        const endTime = ev?.end
-          ? new Date(ev.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-          : "";
-
-        const timeText = ev?.start ? `${formatLocal(ev.start)}${endTime ? ` to ${endTime}` : ""}` : "";
-
-        el.innerHTML = `
-          <div class="flex flex-wrap justify-between gap-2">
-            <div class="font-semibold">${ev.title || ""}</div>
-            <div class="text-sm text-neutral-600 dark:text-neutral-300">${timeText}</div>
-          </div>
-          <div class="mt-2 text-sm text-neutral-500">
-            ${[ev.locationName, ev.address].filter(Boolean).join(", ")}
-          </div>
-          ${ev.notes ? `<div class="mt-2 text-sm text-neutral-500">${ev.notes}</div>` : ""}
-          <div class="mt-3 flex gap-2 text-sm">
-            <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" href="${ev.mapUrl || details?.primaryVenue?.mapUrl || "#"}" target="_blank" rel="noopener">Maps</a>
-            <a class="rounded-xl border px-3 py-1 dark:border-neutral-800" href="${buildGoogleCalendarLink(ev)}" target="_blank" rel="noopener">Add to Google Calendar</a>
-          </div>
-        `;
-        schedule.appendChild(el);
-      }
-
-      // Updates
-      const updates = $("updates");
-      updates.innerHTML = "";
-      for (const u of details.updates || []) {
-        const el = document.createElement("div");
-        el.className = "rounded-2xl border p-4 text-sm dark:border-neutral-800";
-        el.innerHTML = `
-          <div class="text-xs text-neutral-500">${u.when ? formatLocal(u.when) : ""}</div>
-          <div class="mt-1">${u.text || ""}</div>
-        `;
-        updates.appendChild(el);
-      }
-
-      // Contacts
-      const contacts = $("contacts");
-      contacts.innerHTML = "";
-      for (const c of details.contacts || []) {
-        const el = document.createElement("div");
-        const name = c.name || "";
-        const role = c.role ? ` (${c.role})` : "";
-        const phone = c.phone ? ` · ${c.phone}` : "";
-        el.innerHTML = `<strong>${name}</strong>${role}${phone}`;
-        contacts.appendChild(el);
-      }
-
-      applyTheme(details.theme);
-      applyDecor(details);
-      renderCouplePhoto(details);
-      renderRsvp(details.rsvp);
     }
 
     async function boot() {
