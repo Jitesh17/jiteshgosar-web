@@ -1,20 +1,57 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* 1. Import Google Fonts (Must be at the very top) */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
+
+/* 2. Define Theme Variables for Tailwind v4 */
+@theme {
+  --font-heading: "Cormorant Garamond", serif;
+  --font-body: "Montserrat", sans-serif;
+}
+
 :root {
   color-scheme: light;
 }
 
 html {
   scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 body {
   font-feature-settings: "liga" 1, "kern" 1;
+  /* Apply the new body font globally by default */
+  font-family: var(--font-body);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
 }
 
 ::selection {
   background: rgba(59, 130, 246, 0.25);
+}
+
+/* 3. Helper Classes for the "WithJoy" Look */
+
+/* Use this for the main Couple Name & Headers */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+/* Use this for the main white container (Glassmorphism + Soft Shadow) */
+.card-joy {
+  @apply rounded-3xl p-8 backdrop-blur-md;
+  /* Light Mode */
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 25px 50px -12px rgba(120, 113, 108, 0.1); /* Soft stone shadow */
+}
+
+/* Dark Mode overrides for the card */
+@media (prefers-color-scheme: dark) {
+  .card-joy {
+    background-color: rgba(23, 23, 23, 0.8); /* neutral-900 at 80% */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
 }
 
 /* Layout helpers */
@@ -25,33 +62,12 @@ body {
 .container-max {
   margin-left: auto;
   margin-right: auto;
-  max-width: 72rem; /* ~ max-w-6xl */
+  max-width: 72rem;
 }
 
 * { box-sizing: border-box; }
 html, body { width: 100%; overflow-x: hidden; }
 
-/* Typography baseline */
-html {
-  font-size: 16px;
-}
-
-body {
-  line-height: 1.6;
-  letter-spacing: -0.01em;
-}
-
-/* Better text rendering */
 h1, h2, h3 {
   letter-spacing: -0.02em;
 }
-/* Add this to global.css for structure only */
-/* df-messenger {
-  z-index: 999;
-}
-
-df-messenger::part(chat-wrapper) {
-  border-radius: 12px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(128,128,128, 0.1); 
-} */
