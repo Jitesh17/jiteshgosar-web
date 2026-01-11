@@ -1,15 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* 1. Import Google Fonts (Must be at the very top) */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
-
-/* 2. Define Theme Variables for Tailwind v4 */
+/* THEME CONFIGURATION (Must come after imports) */
 @theme {
   --font-heading: "Cormorant Garamond", serif;
   --font-body: "Montserrat", sans-serif;
 }
 
+/* ... keep the rest of your CSS below ... */
 :root {
   color-scheme: light;
 }
@@ -21,53 +20,32 @@ html {
 
 body {
   font-feature-settings: "liga" 1, "kern" 1;
-  /* Apply the new body font globally by default */
   font-family: var(--font-body);
   line-height: 1.6;
   letter-spacing: -0.01em;
 }
 
-::selection {
-  background: rgba(59, 130, 246, 0.25);
-}
-
-/* 3. Helper Classes for the "WithJoy" Look */
-
-/* Use this for the main Couple Name & Headers */
+/* UTILITIES */
 .font-heading {
   font-family: var(--font-heading);
 }
 
-/* Use this for the main white container (Glassmorphism + Soft Shadow) */
 .card-joy {
   @apply rounded-3xl p-8 backdrop-blur-md;
-  /* Light Mode */
   background-color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 25px 50px -12px rgba(120, 113, 108, 0.1); /* Soft stone shadow */
+  box-shadow: 0 25px 50px -12px rgba(120, 113, 108, 0.1);
 }
 
-/* Dark Mode overrides for the card */
 @media (prefers-color-scheme: dark) {
   .card-joy {
-    background-color: rgba(23, 23, 23, 0.8); /* neutral-900 at 80% */
+    background-color: rgba(23, 23, 23, 0.8);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   }
 }
 
 /* Layout helpers */
-.section {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-.container-max {
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 72rem;
-}
-
+.section { padding-left: 1.5rem; padding-right: 1.5rem; }
+.container-max { margin-left: auto; margin-right: auto; max-width: 72rem; }
 * { box-sizing: border-box; }
 html, body { width: 100%; overflow-x: hidden; }
-
-h1, h2, h3 {
-  letter-spacing: -0.02em;
-}
+h1, h2, h3 { letter-spacing: -0.02em; }
