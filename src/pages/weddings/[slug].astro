@@ -520,63 +520,83 @@ function renderInvite(details) {
           renderCountdown($("countdown"), startIso, details?.primaryEvent?.title || "");
         }
 
-        // --- 3. Render Schedule (Timeline Style) ---
+// --- 3. Render Schedule (Responsive Ticket Style) ---
         const schedule = $("schedule");
         
-        // Safety check: ensure the DOM element actually exists before trying to modify it
         if (schedule && schedule.style) { 
-          schedule.innerHTML = '<div class="relative ml-3 space-y-0 border-l border-neutral-200 dark:border-neutral-800" id="timelineContainer"></div>';
-          
-          // Use getElementById directly to ensure we aren't running querySelector on a dummy object
-          const timeline = document.getElementById("timelineContainer");
+          schedule.innerHTML = ''; 
+          schedule.className = "space-y-6 mt-6"; 
 
-          if (timeline) {
-            for (const ev of details.schedule || []) {
-              const item = document.createElement("div");
-              item.className = "relative pb-8 pl-8 last:pb-0";
+          for (const ev of details.schedule || []) {
+            const item = document.createElement("div");
+            
+            // KEY CHANGE: "flex-row" is now active on ALL screens (removed flex-col)
+            // This forces the Box to stay on the Left side on mobile.
+            item.className = "flex flex-row items-stretch gap-3 sm:gap-6 border-b border-neutral-100 dark:border-neutral-800 pb-6 last:border-0 last:pb-0";
 
-              const endTime = ev?.end
-                ? new Date(ev.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+            const startObj = ev?.start ? new Date(ev.start) : null;
+            
+            // Date Parts
+            const dayNum = startObj ? startObj.getDate() : ""; 
+            const monthShort = startObj ? startObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase() : ""; 
+            const weekDay = startObj ? startObj.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase() : ""; 
+            
+            // Time Parts
+            const timeStr = startObj 
+                ? startObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) 
                 : "";
 
-              const startObj = ev?.start ? new Date(ev.start) : null;
-              const timeStr = startObj
-                ? startObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                : "";
-              const dateStr = startObj
-                ? startObj.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })
-                : "";
-
-              item.innerHTML = `
-                <div class="absolute -left-[5px] top-1 h-2.5 w-2.5 rounded-full bg-neutral-300 ring-4 ring-white dark:bg-neutral-600 dark:ring-neutral-900"></div>
+            item.innerHTML = `
+              <div class="shrink-0 flex flex-col items-center justify-center w-20 py-3 sm:w-28 sm:py-0 rounded-2xl border-2 border-neutral-100 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900/50">
                 
-                <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
-                  <h3 class="font-heading text-xl font-medium text-neutral-900 dark:text-white">${ev.title || "Event"}</h3>
-                  <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                    ${dateStr} <span class="mx-1 opacity-50">|</span> ${timeStr} ${endTime ? `- ${endTime}` : ""}
-                  </span>
+                <div class="flex flex-col items-center justify-center leading-none">
+                  <div class="text-[9px] sm:text-[10px] font-bold tracking-widest text-neutral-500 uppercase mb-1">${monthShort}</div>
+                  <div class="text-2xl sm:text-3xl font-heading font-bold text-neutral-900 dark:text-white">${dayNum}</div>
+                  <div class="text-[9px] sm:text-[10px] font-medium text-neutral-400 mt-1 uppercase">${weekDay}</div>
                 </div>
 
-                <div class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                  ${[ev.locationName, ev.address].filter(Boolean).join(", ")}
-                </div>
-                
-                ${ev.notes ? `<div class="mt-2 text-sm italic text-neutral-500 dark:text-neutral-500">${ev.notes}</div>` : ""}
+                <div class="w-10 sm:w-16 h-px bg-neutral-200 dark:bg-neutral-700 my-2"></div>
 
-                <div class="mt-3 flex gap-3 text-xs font-medium">
+                <div class="text-xs sm:text-sm font-bold text-neutral-800 dark:text-neutral-200 text-center px-1">
+                  ${timeStr}
+                </div>
+              </div>
+              
+              <div class="flex-1 flex flex-col sm:flex-row sm:items-start sm:justify-between min-w-0 py-1">
+                
+                <div class="flex flex-col justify-center mb-2 sm:mb-0">
+                  <h3 class="font-heading text-lg sm:text-2xl font-medium text-neutral-900 dark:text-white leading-tight">${ev.title || "Event"}</h3>
+                  
+                  <div class="mt-1.5 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
+                    ${[ev.locationName, ev.address].filter(Boolean).join(", ")}
+                  </div>
+                  
+                  ${ev.notes ? `<div class="mt-1.5 text-xs sm:text-sm italic text-neutral-500">${ev.notes}</div>` : ""}
+                </div>
+
+                <div class="shrink-0 flex flex-row sm:flex-col gap-4 sm:gap-2 mt-auto sm:mt-0 sm:items-end sm:text-right text-xs sm:text-sm font-medium pt-1">
                    ${(ev.mapUrl || details?.primaryVenue?.mapUrl) ? `
-                    <a class="flex items-center gap-1 hover:text-black dark:hover:text-white transition-colors text-neutral-500" 
-                       href="${ev.mapUrl || details?.primaryVenue?.mapUrl}" target="_blank" rel="noopener">
-                       <span>📍</span> Map
-                    </a>` : ""}
-                   <a class="flex items-center gap-1 hover:text-black dark:hover:text-white transition-colors text-neutral-500" 
-                      href="${buildGoogleCalendarLink(ev)}" target="_blank" rel="noopener">
-                      <span>📅</span> Add to Cal
-                   </a>
+                    <div class="flex flex-col">
+                      <span class="hidden sm:block text-[10px] uppercase tracking-wider text-neutral-400 font-bold mb-0.5">Location</span>
+                      <a class="flex items-center gap-1.5 text-neutral-900 dark:text-white hover:underline decoration-neutral-400" 
+                         href="${ev.mapUrl || details?.primaryVenue?.mapUrl}" target="_blank" rel="noopener">
+                         <span>📍 Maps</span>
+                         <span class="hidden sm:inline">↗</span>
+                      </a>
+                    </div>` : ""}
+                   
+                   <div class="flex flex-col sm:mt-2">
+                      <span class="hidden sm:block text-[10px] uppercase tracking-wider text-neutral-400 font-bold mb-0.5">Calendar</span>
+                      <a class="flex items-center gap-1.5 text-neutral-900 dark:text-white hover:underline decoration-neutral-400" 
+                          href="${buildGoogleCalendarLink(ev)}" target="_blank" rel="noopener">
+                          <span>📅 Add to Cal</span>
+                      </a>
+                   </div>
                 </div>
-              `;
-              timeline.appendChild(item);
-            }
+
+              </div>
+            `;
+            schedule.appendChild(item);
           }
         }
 

@@ -27,30 +27,27 @@
       "title": "Lagnaotsav (Tilak)",
       "start": "2026-02-04T16:00:00+05:30",
       "end": "2026-02-04T18:00:00+05:30",
-      "locationName": "Nij Nivas",
+      "locationName": "Residence",
       "address": "Bhopal, Madhya Pradesh",
-      "mapUrl": "https://maps.google.com/?q=Bhopal",
-      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+      "mapUrl": "https://maps.app.goo.gl/2vx7FMJnCerpMgiLA"
     },
     {
       "id": "matrika-mandapachchadan",
       "title": "Matrika Pujan & Mandapachchadan",
       "start": "2026-02-05T10:00:00+05:30",
       "end": "2026-02-05T12:00:00+05:30",
-      "locationName": "Nij Nivas",
+      "locationName": "Residence",
       "address": "Bhopal, Madhya Pradesh",
-      "mapUrl": "https://maps.google.com/?q=Bhopal",
-      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+      "mapUrl": "https://maps.app.goo.gl/2vx7FMJnCerpMgiLA"
     },
     {
       "id": "sagai-haldi",
-      "title": "Sagai & Haldi",
+      "title": "Engagement & Haldi",
       "start": "2026-02-07T11:00:00+05:30",
       "end": "2026-02-07T15:00:00+05:30",
       "locationName": "Taj Usha Kiran Palace",
       "address": "Gwalior, Madhya Pradesh",
-      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior",
-      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior"
     },
     {
       "id": "sangeet",
@@ -59,28 +56,25 @@
       "end": "2026-02-07T24:00:00+05:30",
       "locationName": "Taj Usha Kiran Palace",
       "address": "Gwalior, Madhya Pradesh",
-      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior",
-      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior"
     },
     {
       "id": "saat-phere-pani-grahan",
-      "title": "Pani Grahan Sanskar (Saat Phere)",
+      "title": "Wedding Ceremony (Saat Phere and Marathi Wedding)",
       "start": "2026-02-08T11:00:00+05:30",
       "end": "2026-02-08T15:00:00+05:30",
       "locationName": "Taj Usha Kiran Palace",
       "address": "Gwalior, Madhya Pradesh",
-      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior",
-      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior"
     },
     {
       "id": "aashirwad-samaroh",
-      "title": "Shubh Aashirwad Samaroh",
+      "title": "Reception",
       "start": "2026-02-08T19:00:00+05:30",
       "end": "2026-02-08T23:00:00+05:30",
       "locationName": "Taj Usha Kiran Palace",
       "address": "Gwalior, Madhya Pradesh",
-      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior",
-      "notes": "Start time as per card. End time is an estimate for calendar convenience."
+      "mapUrl": "https://maps.google.com/?q=Taj%20Usha%20Kiran%20Palace%20Gwalior"
     }
   ],
 
@@ -100,17 +94,17 @@
     {
       "name": "Pallavi Mane",
       "role": "Bride",
-      "phone": "+91-XXXXXXXXXX"
-    },
-    {
-      "name": "Family Contact",
-      "role": "Family",
-      "phone": "+91-XXXXXXXXXX"
+      "phone": "+91-7506110790"
     },
     {
       "name": "Priya",
       "role": "Sister of Groom",
       "phone": "+91-8965863630"
+    },
+    {
+      "name": "Jitesh Gosar",
+      "role": "Very close friend",
+      "phone": "+91-8517069572"
     }
   ],
 
